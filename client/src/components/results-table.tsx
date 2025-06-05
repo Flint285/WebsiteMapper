@@ -20,7 +20,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
   const { toast } = useToast();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["/api/crawl", sessionId],
+    queryKey: [`/api/crawl/${sessionId}`],
     refetchInterval: (data) => {
       const session = (data as any)?.session;
       return session?.status === "running" ? 2000 : false;
