@@ -38,6 +38,7 @@ export class MemStorage implements IStorage {
       startedAt: new Date(),
       completedAt: null,
       error: null,
+      maxPages: insertSession.maxPages || null,
     };
     this.crawlSessions.set(id, session);
     return session;
@@ -62,6 +63,10 @@ export class MemStorage implements IStorage {
       ...insertPage,
       id,
       discoveredAt: new Date(),
+      size: insertPage.size || null,
+      statusCode: insertPage.statusCode || null,
+      contentType: insertPage.contentType || null,
+      loadTime: insertPage.loadTime || null,
     };
     this.crawledPages.set(id, page);
     return page;

@@ -2,7 +2,6 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { startCrawlSchema, type StartCrawlRequest, type CrawlProgressResponse } from "@shared/schema";
-import { WebSocket, WebSocketServer } from "ws";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { parseStringPromise } from "xml2js";
@@ -110,26 +109,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   const httpServer = createServer(app);
-
-  // WebSocket server for real-time progress updates
-  const wss = new WebSocketServer({ server: httpServer });
-  
-  wss.on('connection', (ws: WebSocket) => {
-    ws.on('message', (message: string) => {
-      try {
-        const data = JSON.parse(message);
-        if (data.type === 'subscribe' && data.sessionId) {
-          (ws as any).sessionId = data.sessionId;
-        }
-      } catch (e) {
-        console.error('Invalid WebSocket message:', e);
-      }
-    });
-  });
-
-  // Store WebSocket server reference for broadcasting
-  (httpServer as any).wss = wss;
-
   return httpServer;
 }
 
@@ -300,10 +279,10 @@ function extractLinks(html: string, baseUrl: string): string[] {
     }
   });
   
-  return [...new Set(links)]; // Remove duplicates
+  return Array.from(new Set(links)); // Remove duplicates
 }
 
 function broadcastProgress(sessionId: number, data: any) {
-  // This would broadcast to WebSocket clients subscribed to this session
-  // Implementation depends on the WebSocket server setup
+  // Simplified - no WebSocket broadcasting for now
+  console.log(`Progress for session ${sessionId}:`, data);
 }
