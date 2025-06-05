@@ -45,7 +45,7 @@ export default function CrawlerForm({ onSessionStart }: CrawlerFormProps) {
       onSessionStart(result.sessionId);
       toast({
         title: "Crawl Started",
-        description: "Website crawling has begun. Check the progress below.",
+        description: `Crawling ${data.url} with max depth ${data.maxDepth}. Progress will appear below.`,
       });
     } catch (error) {
       toast({

@@ -78,7 +78,7 @@ export default function CrawlStatus({ sessionId }: CrawlStatusProps) {
       <Card className="mb-8">
         <CardContent className="p-6">
           <div className="flex items-center justify-center">
-            <div className="text-muted-foreground">No session data found. Debug: {JSON.stringify(data)}</div>
+            <div className="text-muted-foreground">Session {sessionId} not found or still loading...</div>
           </div>
         </CardContent>
       </Card>
@@ -188,8 +188,19 @@ export default function CrawlStatus({ sessionId }: CrawlStatusProps) {
 
         {session.status === "completed" && (
           <div className="bg-green-50 border border-green-200 p-3 rounded-md">
-            <div className="text-sm text-green-800">
-              Crawling completed successfully! Found {session.totalPages} pages total.
+            <div className="text-sm text-green-800 font-medium">
+              ✅ Crawling completed successfully! Found {session.totalPages} pages total.
+            </div>
+            <div className="text-xs text-green-700 mt-1">
+              Completed at {session.completedAt ? new Date(session.completedAt).toLocaleTimeString() : 'Unknown time'}
+            </div>
+          </div>
+        )}
+
+        {session.status === "stopped" && (
+          <div className="bg-orange-50 border border-orange-200 p-3 rounded-md">
+            <div className="text-sm text-orange-800 font-medium">
+              ⏸️ Crawling stopped by user. Found {session.totalPages} pages before stopping.
             </div>
           </div>
         )}
