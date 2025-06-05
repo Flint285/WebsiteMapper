@@ -14,6 +14,7 @@ export const crawlSessions = pgTable("crawl_sessions", {
   startedAt: timestamp("started_at").defaultNow(),
   completedAt: timestamp("completed_at"),
   error: text("error"),
+  currentUrl: text("current_url"),
 });
 
 export const crawledPages = pgTable("crawled_pages", {

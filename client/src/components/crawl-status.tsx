@@ -188,6 +188,15 @@ export default function CrawlStatus({ sessionId }: CrawlStatusProps) {
           </div>
         </div>
 
+        {session.status === "running" && (
+          <div className="bg-blue-50 border border-blue-200 p-3 rounded-md">
+            <div className="text-sm text-blue-800 font-medium mb-1">Currently Crawling:</div>
+            <div className="text-xs font-mono text-blue-700 truncate">
+              {session.currentUrl || "Initializing..."}
+            </div>
+          </div>
+        )}
+
         {session.status === "completed" && (
           <div className="bg-green-50 border border-green-200 p-3 rounded-md">
             <div className="text-sm text-green-800 font-medium">

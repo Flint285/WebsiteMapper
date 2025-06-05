@@ -11,6 +11,9 @@ export interface IStorage {
   getCrawledPagesBySession(sessionId: number): Promise<CrawledPage[]>;
   getCrawledPageCount(sessionId: number): Promise<number>;
   getPagesBySessionAndStatus(sessionId: number, statusCode?: number): Promise<CrawledPage[]>;
+  
+  // Session tracking
+  setCurrentUrl(sessionId: number, url: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -39,6 +42,7 @@ export class MemStorage implements IStorage {
       completedAt: null,
       error: null,
       maxPages: insertSession.maxPages || null,
+      currentUrl: null,
     };
     this.crawlSessions.set(id, session);
     return session;
@@ -88,6 +92,14 @@ export class MemStorage implements IStorage {
     return Array.from(this.crawledPages.values()).filter(
       (page) => page.sessionId === sessionId && (!statusCode || page.statusCode === statusCode)
     );
+  }
+
+  async setCurrentUrl(sessionId: number, url: string): Promise<void> {
+    const session = this.crawlSessions.get(sessionId);
+    if (session) {
+      session.currentUrl = url;
+      this.crawlSessions.set(sessionId, session);
+    }
   }
 }
 

@@ -75,6 +75,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Stop a crawl session
   app.post("/api/crawl/:sessionId/stop", async (req, res) => {
     const sessionId = parseInt(req.params.sessionId);
+    
+    // Signal the crawl to stop
+    const crawlState = activeCrawls.get(sessionId);
+    if (crawlState) {
+      crawlState.shouldStop = true;
+    }
+    
     const session = await storage.updateCrawlSession(sessionId, {
       status: 'stopped',
       completedAt: new Date(),
@@ -112,6 +119,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   return httpServer;
 }
 
+// Global session state for tracking active crawls
+const activeCrawls = new Map<number, { shouldStop: boolean; currentUrl: string }>();
+
 // Crawling logic
 async function startCrawling(sessionId: number, startUrl: string, maxPages: number, maxDepth: number) {
   const session = await storage.updateCrawlSession(sessionId, { 
@@ -120,6 +130,9 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
   });
   
   if (!session) return;
+  
+  // Initialize crawl tracking
+  activeCrawls.set(sessionId, { shouldStop: false, currentUrl: startUrl });
 
   const visited = new Set<string>();
   const queue: Array<{ url: string; depth: number }> = [];
@@ -143,10 +156,22 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
   }
 
   while (queue.length > 0 && totalPages < maxPages) {
+    // Check if crawl should stop
+    const crawlState = activeCrawls.get(sessionId);
+    if (crawlState?.shouldStop) {
+      console.log(`Stopping crawl for session ${sessionId} by user request`);
+      break;
+    }
+
     const current = queue.shift();
     if (!current || visited.has(current.url) || current.depth > maxDepth) continue;
 
     visited.add(current.url);
+    
+    // Update current URL being crawled
+    if (crawlState) {
+      crawlState.currentUrl = current.url;
+    }
     
     try {
       const startTime = Date.now();
