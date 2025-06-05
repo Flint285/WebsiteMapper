@@ -19,13 +19,13 @@ export default function CrawlStatus({ sessionId }: CrawlStatusProps) {
   const { data, isLoading } = useQuery({
     queryKey: ["/api/crawl", sessionId],
     refetchInterval: (data) => {
-      const session = data?.session;
+      const session = (data as any)?.session;
       return session?.status === "running" ? 2000 : false;
     },
   });
 
-  const session = data?.session;
-  const stats = data?.stats;
+  const session = (data as any)?.session;
+  const stats = (data as any)?.stats;
 
   // Update elapsed time
   useEffect(() => {

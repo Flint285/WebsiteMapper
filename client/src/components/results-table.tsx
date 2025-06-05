@@ -22,12 +22,12 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
   const { data, isLoading } = useQuery({
     queryKey: ["/api/crawl", sessionId],
     refetchInterval: (data) => {
-      const session = data?.session;
+      const session = (data as any)?.session;
       return session?.status === "running" ? 2000 : false;
     },
   });
 
-  const pages = data?.pages || [];
+  const pages = (data as any)?.pages || [];
 
   // Filter and paginate pages
   const filteredPages = pages.filter(page => {

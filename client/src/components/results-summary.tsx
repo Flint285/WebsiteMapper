@@ -14,13 +14,13 @@ export default function ResultsSummary({ sessionId }: ResultsSummaryProps) {
   const { data, isLoading } = useQuery({
     queryKey: ["/api/crawl", sessionId],
     refetchInterval: (data) => {
-      const session = data?.session;
+      const session = (data as any)?.session;
       return session?.status === "running" ? 2000 : false;
     },
   });
 
-  const session = data?.session;
-  const stats = data?.stats;
+  const session = (data as any)?.session;
+  const stats = (data as any)?.stats;
 
   const handleExport = async () => {
     try {
@@ -71,8 +71,9 @@ export default function ResultsSummary({ sessionId }: ResultsSummaryProps) {
     return null;
   }
 
-  const avgLoadTime = data?.pages?.length > 0 
-    ? (data.pages.reduce((sum, page) => sum + (page.loadTime || 0), 0) / data.pages.length / 1000).toFixed(1)
+  const pages = (data as any)?.pages || [];
+  const avgLoadTime = pages.length > 0 
+    ? (pages.reduce((sum: number, page: any) => sum + (page.loadTime || 0), 0) / pages.length / 1000).toFixed(1)
     : "0.0";
 
   return (
