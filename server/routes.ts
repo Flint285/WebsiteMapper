@@ -57,8 +57,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     });
 
+    // Get current URL from active crawl state
+    const crawlState = activeCrawls.get(sessionId);
+    const sessionWithCurrentUrl = {
+      ...session,
+      currentUrl: crawlState?.currentUrl || null
+    };
+
     const response: CrawlProgressResponse = {
-      session,
+      session: sessionWithCurrentUrl,
       pages,
       stats: {
         totalFound: pages.length,
@@ -244,14 +251,18 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
     }
   }
 
-  // Mark as completed
+  // Mark as completed and cleanup
+  const finalStatus = activeCrawls.get(sessionId)?.shouldStop ? 'stopped' : 'completed';
   await storage.updateCrawlSession(sessionId, {
-    status: 'completed',
+    status: finalStatus,
     completedAt: new Date(),
     totalPages,
     successfulPages,
     errorPages,
   });
+
+  // Clean up active crawl tracking
+  activeCrawls.delete(sessionId);
 
   broadcastProgress(sessionId, { 
     totalPages, 
