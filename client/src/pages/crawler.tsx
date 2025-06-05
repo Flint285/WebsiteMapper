@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Bug } from "lucide-react";
 import CrawlerForm from "@/components/crawler-form";
-import CrawlProgress from "@/components/crawl-progress";
+import CrawlStatus from "@/components/crawl-status";
 import ResultsSummary from "@/components/results-summary";
 import ResultsTable from "@/components/results-table";
 
@@ -30,7 +30,7 @@ export default function CrawlerPage() {
         
         {currentSessionId && (
           <>
-            <CrawlProgress sessionId={currentSessionId} />
+            <CrawlStatus sessionId={currentSessionId} />
             <ResultsSummary sessionId={currentSessionId} />
             <ResultsTable sessionId={currentSessionId} />
           </>
