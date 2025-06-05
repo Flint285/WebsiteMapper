@@ -7,6 +7,11 @@ import ResultsTable from "@/components/results-table";
 
 export default function CrawlerPage() {
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
+  
+  const handleSessionStart = (sessionId: number) => {
+    console.log(`Setting current session to: ${sessionId}`);
+    setCurrentSessionId(sessionId);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -26,7 +31,7 @@ export default function CrawlerPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <CrawlerForm onSessionStart={setCurrentSessionId} />
+        <CrawlerForm onSessionStart={handleSessionStart} />
         
         {currentSessionId && (
           <>
