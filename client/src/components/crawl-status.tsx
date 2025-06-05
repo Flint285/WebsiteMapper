@@ -61,12 +61,24 @@ export default function CrawlStatus({ sessionId }: CrawlStatusProps) {
     }
   };
 
-  if (isLoading || !session) {
+  if (isLoading) {
     return (
       <Card className="mb-8">
         <CardContent className="p-6">
           <div className="flex items-center justify-center">
             <div className="text-muted-foreground">Loading crawl status...</div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!session) {
+    return (
+      <Card className="mb-8">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center">
+            <div className="text-muted-foreground">No session data found. Debug: {JSON.stringify(data)}</div>
           </div>
         </CardContent>
       </Card>
