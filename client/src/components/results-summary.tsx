@@ -12,9 +12,9 @@ export default function ResultsSummary({ sessionId }: ResultsSummaryProps) {
   const { toast } = useToast();
 
   const { data, isLoading } = useQuery({
-    queryKey: [`/api/crawl/${sessionId}`],
-    refetchInterval: (data) => {
-      const session = (data as any)?.session;
+    queryKey: ["/api/crawl", sessionId],
+    refetchInterval: (query) => {
+      const session = (query?.state?.data as any)?.session;
       return session?.status === "running" ? 2000 : false;
     },
   });
@@ -137,7 +137,7 @@ export default function ResultsSummary({ sessionId }: ResultsSummaryProps) {
                       }
                     </span>
                   </div>
-                  <span className="text-sm font-medium">{count}</span>
+                  <span className="text-sm font-medium">{count as number}</span>
                 </div>
               ))}
             </div>
@@ -148,7 +148,7 @@ export default function ResultsSummary({ sessionId }: ResultsSummaryProps) {
               {Object.entries(stats.pageTypes).map(([type, count]) => (
                 <div key={type} className="flex justify-between items-center">
                   <span className="text-sm">{type} Pages</span>
-                  <span className="text-sm font-medium">{count}</span>
+                  <span className="text-sm font-medium">{count as number}</span>
                 </div>
               ))}
             </div>

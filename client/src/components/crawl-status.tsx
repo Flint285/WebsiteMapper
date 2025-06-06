@@ -17,9 +17,9 @@ export default function CrawlStatus({ sessionId }: CrawlStatusProps) {
   const { toast } = useToast();
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: [`/api/crawl/${sessionId}`],
-    refetchInterval: (data) => {
-      const session = (data as any)?.session;
+    queryKey: ["/api/crawl", sessionId],
+    refetchInterval: (query) => {
+      const session = (query?.state?.data as any)?.session;
       return session?.status === "running" ? 1000 : false;
     },
     refetchOnMount: true,
