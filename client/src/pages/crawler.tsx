@@ -22,6 +22,7 @@ export default function CrawlerPage() {
             <div className="flex items-center">
               <Bug className="text-primary text-2xl mr-3 h-8 w-8" />
               <h1 className="text-xl font-medium text-foreground">Website Page Crawler</h1>
+              <span className="ml-3 px-2 py-1 text-xs font-semibold bg-orange-100 text-orange-800 rounded-full">BETA</span>
             </div>
             <div className="text-sm text-muted-foreground">
               Professional SEO Analysis Tool
