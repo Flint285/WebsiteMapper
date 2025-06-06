@@ -305,10 +305,37 @@ function extractLinks(html: string, baseUrl: string): string[] {
     if (href) {
       try {
         const url = new URL(href, baseUrl);
+        
         // Only include links from the same domain
-        if (url.hostname === base.hostname) {
-          links.push(url.toString());
+        if (url.hostname !== base.hostname) {
+          return;
         }
+        
+        // Filter out anchor fragments (URLs that only differ by hash)
+        const urlWithoutHash = url.origin + url.pathname + url.search;
+        const baseWithoutHash = base.origin + base.pathname + base.search;
+        
+        // Skip if it's just an anchor on the same page
+        if (urlWithoutHash === baseWithoutHash && url.hash) {
+          return;
+        }
+        
+        // Skip if it's just a hash fragment without a path
+        if (url.hash && (!url.pathname || url.pathname === '/' || url.pathname === base.pathname)) {
+          return;
+        }
+        
+        // Skip common non-page file extensions
+        const pathname = url.pathname.toLowerCase();
+        const skipExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.pdf', '.doc', '.docx', '.zip', '.mp3', '.mp4', '.avi'];
+        if (skipExtensions.some(ext => pathname.endsWith(ext))) {
+          return;
+        }
+        
+        // Remove hash fragment for consistency
+        url.hash = '';
+        links.push(url.toString());
+        
       } catch (e) {
         // Invalid URL, skip
       }
