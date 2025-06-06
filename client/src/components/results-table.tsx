@@ -32,7 +32,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
   // Filter and paginate pages
   const filteredPages = pages.filter((page: any) => {
     const matchesSearch = !searchFilter || page.url.toLowerCase().includes(searchFilter.toLowerCase());
-    const matchesStatus = !statusFilter || page.statusCode?.toString() === statusFilter;
+    const matchesStatus = !statusFilter || statusFilter === "all" || page.statusCode?.toString() === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
@@ -110,7 +110,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
                 <SelectValue placeholder="All Status Codes" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Status Codes</SelectItem>
+                <SelectItem value="all">All Status Codes</SelectItem>
                 <SelectItem value="200">200 OK</SelectItem>
                 <SelectItem value="301">301 Redirect</SelectItem>
                 <SelectItem value="404">404 Not Found</SelectItem>
