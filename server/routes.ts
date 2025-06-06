@@ -21,7 +21,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ sessionId: session.id });
 
       // Start crawling in background
-      startCrawling(session.id, url, maxPages || 1000, maxDepth);
+      startCrawling(session.id, url, maxPages, maxDepth);
     } catch (error) {
       res.status(400).json({ error: "Invalid request data" });
     }
@@ -61,7 +61,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const crawlState = activeCrawls.get(sessionId);
     const sessionWithCurrentUrl = {
       ...session,
-      currentUrl: crawlState?.currentUrl || null
+      currentUrl: crawlState?.currentUrl || session.currentUrl || null
     };
 
     const response: CrawlProgressResponse = {

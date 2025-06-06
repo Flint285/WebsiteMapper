@@ -21,8 +21,8 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
 
   const { data, isLoading } = useQuery({
     queryKey: ["/api/crawl", sessionId],
-    refetchInterval: (data) => {
-      const session = (data as any)?.session;
+    refetchInterval: (query) => {
+      const session = (query?.state?.data as any)?.session;
       return session?.status === "running" ? 2000 : false;
     },
   });
@@ -30,7 +30,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
   const pages = (data as any)?.pages || [];
 
   // Filter and paginate pages
-  const filteredPages = pages.filter(page => {
+  const filteredPages = pages.filter((page: any) => {
     const matchesSearch = !searchFilter || page.url.toLowerCase().includes(searchFilter.toLowerCase());
     const matchesStatus = !statusFilter || page.statusCode?.toString() === statusFilter;
     return matchesSearch && matchesStatus;
@@ -134,7 +134,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedPages.map((page) => (
+              {paginatedPages.map((page: any) => (
                 <TableRow key={page.id}>
                   <TableCell>
                     <div className="flex items-center">
