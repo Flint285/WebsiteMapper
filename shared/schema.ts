@@ -53,7 +53,7 @@ export type CrawledPage = typeof crawledPages.$inferSelect;
 // API request/response types
 export const startCrawlSchema = z.object({
   url: z.string().url(),
-  maxPages: z.number().optional(),
+  maxPages: z.number().min(1).max(10000),
   maxDepth: z.number().min(1).max(20),
 });
 

@@ -13,7 +13,7 @@ import { apiRequest } from "@/lib/queryClient";
 
 const crawlFormSchema = z.object({
   url: z.string().url("Please enter a valid URL"),
-  maxPages: z.number().min(1).max(10000).optional(),
+  maxPages: z.number().min(1).max(10000),
   maxDepth: z.number().min(1).max(20),
 });
 

@@ -125,7 +125,7 @@ export default function CrawlProgress({ sessionId }: CrawlProgressProps) {
         <div className="bg-muted p-3 rounded-md">
           <div className="text-sm text-muted-foreground mb-1">Currently Crawling:</div>
           <div className="text-sm font-mono text-foreground truncate">
-            {session.url}
+            {session.currentUrl || session.url}
           </div>
         </div>
       </CardContent>
