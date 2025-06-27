@@ -17,6 +17,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
   const [searchFilter, setSearchFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const { toast } = useToast();
 
   const { data, isLoading } = useQuery({
@@ -36,10 +37,15 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
     return matchesSearch && matchesStatus;
   });
 
-  const itemsPerPage = 10;
   const totalPages = Math.ceil(filteredPages.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedPages = filteredPages.slice(startIndex, startIndex + itemsPerPage);
+
+  // Reset to first page when changing page size
+  const handlePageSizeChange = (newSize: string) => {
+    setItemsPerPage(parseInt(newSize));
+    setCurrentPage(1);
+  };
 
   const handleCopyUrl = (url: string) => {
     navigator.clipboard.writeText(url).then(() => {
@@ -115,6 +121,18 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
                 <SelectItem value="301">301 Redirect</SelectItem>
                 <SelectItem value="404">404 Not Found</SelectItem>
                 <SelectItem value="500">500 Server Error</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={itemsPerPage.toString()} onValueChange={handlePageSizeChange}>
+              <SelectTrigger className="w-full sm:w-[120px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10 per page</SelectItem>
+                <SelectItem value="25">25 per page</SelectItem>
+                <SelectItem value="50">50 per page</SelectItem>
+                <SelectItem value="100">100 per page</SelectItem>
+                <SelectItem value="250">250 per page</SelectItem>
               </SelectContent>
             </Select>
           </div>
