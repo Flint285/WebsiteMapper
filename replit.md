@@ -97,8 +97,25 @@ WebsiteMapper is a professional SEO analysis tool that provides web crawling cap
 - Environment variable: `DATABASE_URL` for database connection
 - Migration command: `npm run db:push`
 
+## Key Features
+
+### Duplicate Content Detection
+- **Content Hashing**: Uses SHA-256 hash of normalized HTML content to identify duplicate pages
+- **Intelligent Filtering**: Removes scripts, styles, and comments before hashing for accurate content comparison
+- **Statistics Tracking**: Shows total URLs found vs. unique pages vs. duplicate URLs
+- **Filter Toggle**: Users can filter results to show only unique content
+- **Visual Indicators**: Table displays duplicate status with badges showing count of duplicate URLs
+
+### Smart URL Filtering
+- Excludes anchor fragments (#section) and hash parameters
+- Filters out non-page URLs (downloads, external links, etc.)
+- Maintains SEO-relevant URL variations for analysis
+
 ## Changelog
-- June 27, 2025. Initial setup
+- June 27, 2025: Added duplicate content detection system with content hashing
+- June 27, 2025: Enhanced results display with unique/duplicate content statistics
+- June 27, 2025: Added page size selector (10-250 results per page)
+- June 27, 2025: Initial setup
 
 ## User Preferences
 
