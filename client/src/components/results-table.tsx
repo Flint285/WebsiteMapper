@@ -47,16 +47,23 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
       hashCounts.set(page.contentHash, (hashCounts.get(page.contentHash) || 0) + 1);
     }
   });
+  
+  console.log('Hash counts:', Array.from(hashCounts.entries()).filter(([hash, count]) => count > 1));
 
   // Apply unique content filter if enabled
   if (showUniqueOnly) {
+    console.log('Applying unique filter, total pages before:', filteredPages.length);
     const seenHashes = new Set();
     filteredPages = filteredPages.filter((page: any) => {
       if (!page.contentHash) return true; // Keep pages without hash (errors, etc.)
-      if (seenHashes.has(page.contentHash)) return false;
+      if (seenHashes.has(page.contentHash)) {
+        console.log('Filtering out duplicate:', page.url, 'hash:', page.contentHash);
+        return false;
+      }
       seenHashes.add(page.contentHash);
       return true;
     });
+    console.log('Pages after unique filter:', filteredPages.length);
   }
 
   const totalPages = Math.ceil(filteredPages.length / itemsPerPage);
@@ -66,6 +73,12 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
   // Reset to first page when changing page size
   const handlePageSizeChange = (newSize: string) => {
     setItemsPerPage(parseInt(newSize));
+    setCurrentPage(1);
+  };
+
+  // Reset to first page when toggling unique content filter
+  const handleUniqueToggle = (checked: boolean) => {
+    setShowUniqueOnly(checked);
     setCurrentPage(1);
   };
 
@@ -161,7 +174,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
               <Switch
                 id="unique-only"
                 checked={showUniqueOnly}
-                onCheckedChange={setShowUniqueOnly}
+                onCheckedChange={handleUniqueToggle}
               />
               <Label htmlFor="unique-only" className="text-sm font-medium">
                 Unique content only
