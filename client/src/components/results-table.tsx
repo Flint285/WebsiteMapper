@@ -6,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 
@@ -16,6 +18,7 @@ interface ResultsTableProps {
 export default function ResultsTable({ sessionId }: ResultsTableProps) {
   const [searchFilter, setSearchFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [showUniqueOnly, setShowUniqueOnly] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const { toast } = useToast();
@@ -31,11 +34,30 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
   const pages = (data as any)?.pages || [];
 
   // Filter and paginate pages
-  const filteredPages = pages.filter((page: any) => {
+  let filteredPages = pages.filter((page: any) => {
     const matchesSearch = !searchFilter || page.url.toLowerCase().includes(searchFilter.toLowerCase());
     const matchesStatus = !statusFilter || statusFilter === "all" || page.statusCode?.toString() === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  // Create a map of content hashes to count duplicates
+  const hashCounts = new Map();
+  pages.forEach((page: any) => {
+    if (page.contentHash) {
+      hashCounts.set(page.contentHash, (hashCounts.get(page.contentHash) || 0) + 1);
+    }
+  });
+
+  // Apply unique content filter if enabled
+  if (showUniqueOnly) {
+    const seenHashes = new Set();
+    filteredPages = filteredPages.filter((page: any) => {
+      if (!page.contentHash) return true; // Keep pages without hash (errors, etc.)
+      if (seenHashes.has(page.contentHash)) return false;
+      seenHashes.add(page.contentHash);
+      return true;
+    });
+  }
 
   const totalPages = Math.ceil(filteredPages.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -135,6 +157,16 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
                 <SelectItem value="250">250 per page</SelectItem>
               </SelectContent>
             </Select>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="unique-only"
+                checked={showUniqueOnly}
+                onCheckedChange={setShowUniqueOnly}
+              />
+              <Label htmlFor="unique-only" className="text-sm font-medium">
+                Unique content only
+              </Label>
+            </div>
           </div>
         </div>
       </CardHeader>
@@ -148,6 +180,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
                 <TableHead>Type</TableHead>
                 <TableHead>Size</TableHead>
                 <TableHead>Load Time</TableHead>
+                <TableHead>Content</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -175,6 +208,21 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {formatLoadTime(page.loadTime)}
+                  </TableCell>
+                  <TableCell>
+                    {page.contentHash && hashCounts.get(page.contentHash) > 1 ? (
+                      <Badge variant="secondary" className="text-xs">
+                        Duplicate ({hashCounts.get(page.contentHash)})
+                      </Badge>
+                    ) : (
+                      page.contentHash ? (
+                        <Badge variant="outline" className="text-xs">
+                          Unique
+                        </Badge>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">-</span>
+                      )
+                    )}
                   </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
