@@ -1,0 +1,23 @@
+Pages after unique filter: 19
+Hash counts: 
+(11) [Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2)]
+Hash counts: 
+(11) [Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2)]
+Applying unique filter, total pages before: 33
+Filtering out duplicate: https://www.fbcdsm.org/about-us hash: 05d599e3bc87b829fd25652887b2b15a1ab21c44e6bc946710fda8a8e3fcad5a
+Filtering out duplicate: https://www.fbcdsm.org/welcome hash: a0950ff1fa5d2b7697ae4641dc9217e316e3d580cee39c3c54849be6cb463a8f
+Filtering out duplicate: https://www.fbcdsm.org/media hash: 4be2de88cc260b71436a3c56acf398213c4bb8cd291d289bb6e8dd26d780fc69
+Filtering out duplicate: https://www.fbcdsm.org/media/live-stream.aspx hash: 040bbb3f4404598032fb23873ef2b82c0b849cb90173dc3c03ba5b8a878602a1
+Filtering out duplicate: https://www.fbcdsm.org/ministries/adults hash: 15bead336bf30be7dc6b8b8afee1cd69fae8664db6af3b2fc2a7911fb691a97b
+Filtering out duplicate: https://www.fbcdsm.org/ministries/children hash: dc8a6b4d8ab739da208b625a69a6ab80354b94ea4580b5e39931767fd8658811
+Filtering out duplicate: https://www.fbcdsm.org/ministries/youth hash: b68c7e4f9dca1cde6f1ee576da0382b1307c348afb299311a1ecfbf3ebb737b7
+Filtering out duplicate: https://www.fbcdsm.org/calendar hash: ae792421cc391dc712b0ad01e5d83b81fcfa8a085bde232bf048bc37dcf40224
+Filtering out duplicate: https://www.fbcdsm.org/ways-to-give hash: 7d1d644827648a3dcacbadda2aab02b1863a1e7be93800e94e67b31cfec60910
+Filtering out duplicate: https://www.fbcdsm.org/404 hash: 7097fa0e17be1eb52b5a986ad79a7e35f4d04ab318d7650e3eb77b27d7698420
+Filtering out duplicate: https://www.fbcdsm.org/children.aspx hash: dc8a6b4d8ab739da208b625a69a6ab80354b94ea4580b5e39931767fd8658811
+Filtering out duplicate: https://www.fbcdsm.org/youth.aspx hash: b68c7e4f9dca1cde6f1ee576da0382b1307c348afb299311a1ecfbf3ebb737b7
+Filtering out duplicate: https://www.fbcdsm.org/adults.aspx hash: 15bead336bf30be7dc6b8b8afee1cd69fae8664db6af3b2fc2a7911fb691a97b
+Filtering out duplicate: https://www.fbcdsm.org/contact-us.aspx hash: b24a75fb883b4a52204fcc6845d52390990a1f8dcd7448808d90589f77ba10a7
+Pages after unique filter: 19
+Hash counts: 
+(11) [Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2)]
