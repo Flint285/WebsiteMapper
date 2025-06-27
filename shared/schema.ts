@@ -26,6 +26,7 @@ export const crawledPages = pgTable("crawled_pages", {
   size: integer("size"), // in bytes
   loadTime: integer("load_time"), // in milliseconds
   depth: integer("depth").notNull(),
+  contentHash: text("content_hash"), // SHA-256 hash of page content for duplicate detection
   discoveredAt: timestamp("discovered_at").defaultNow(),
 });
 
@@ -43,6 +44,7 @@ export const insertCrawledPageSchema = createInsertSchema(crawledPages).pick({
   size: true,
   loadTime: true,
   depth: true,
+  contentHash: true,
 });
 
 export type InsertCrawlSession = z.infer<typeof insertCrawlSessionSchema>;

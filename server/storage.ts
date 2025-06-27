@@ -12,6 +12,10 @@ export interface IStorage {
   getCrawledPageCount(sessionId: number): Promise<number>;
   getPagesBySessionAndStatus(sessionId: number, statusCode?: number): Promise<CrawledPage[]>;
   
+  // Duplicate content detection
+  getUniqueContentHashes(sessionId: number): Promise<string[]>;
+  getPagesByContentHash(sessionId: number, contentHash: string): Promise<CrawledPage[]>;
+  
   // Session tracking
   setCurrentUrl(sessionId: number, url: string): Promise<void>;
 }
@@ -91,6 +95,20 @@ export class MemStorage implements IStorage {
   async getPagesBySessionAndStatus(sessionId: number, statusCode?: number): Promise<CrawledPage[]> {
     return Array.from(this.crawledPages.values()).filter(
       (page) => page.sessionId === sessionId && (!statusCode || page.statusCode === statusCode)
+    );
+  }
+
+  async getUniqueContentHashes(sessionId: number): Promise<string[]> {
+    const pages = Array.from(this.crawledPages.values()).filter(
+      (page) => page.sessionId === sessionId && page.contentHash
+    );
+    const uniqueHashes = new Set(pages.map(page => page.contentHash!));
+    return Array.from(uniqueHashes);
+  }
+
+  async getPagesByContentHash(sessionId: number, contentHash: string): Promise<CrawledPage[]> {
+    return Array.from(this.crawledPages.values()).filter(
+      (page) => page.sessionId === sessionId && page.contentHash === contentHash
     );
   }
 

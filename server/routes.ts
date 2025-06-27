@@ -5,6 +5,7 @@ import { startCrawlSchema, type StartCrawlRequest, type CrawlProgressResponse } 
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { parseStringPromise } from "xml2js";
+import { createHash } from "crypto";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Start a new crawl session
@@ -189,6 +190,23 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
       });
       const loadTime = Date.now() - startTime;
 
+      // Generate content hash for duplicate detection
+      let contentHash = null;
+      if (response.data && response.status >= 200 && response.status < 300) {
+        // For HTML content, extract meaningful content without scripts/styles
+        if (response.headers['content-type']?.includes('text/html')) {
+          const $ = cheerio.load(response.data);
+          // Remove script, style, and comment nodes for better content comparison
+          $('script, style, noscript').remove();
+          // Get normalized text content
+          const normalizedContent = $('body').text().replace(/\s+/g, ' ').trim();
+          contentHash = createHash('sha256').update(normalizedContent).digest('hex');
+        } else {
+          // For non-HTML content, hash the entire response
+          contentHash = createHash('sha256').update(response.data).digest('hex');
+        }
+      }
+
       const page = await storage.createCrawledPage({
         sessionId,
         url: current.url,
@@ -197,6 +215,7 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
         size: response.data?.length || 0,
         loadTime,
         depth: current.depth,
+        contentHash,
       });
 
       totalPages++;
