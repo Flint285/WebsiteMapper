@@ -65,6 +65,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       currentUrl: crawlState?.currentUrl || session.currentUrl || null
     };
 
+    // Calculate duplicate content statistics
+    const uniqueHashes = await storage.getUniqueContentHashes(sessionId);
+    const uniquePages = uniqueHashes.length;
+    const duplicateUrls = pages.length - uniquePages;
+
     const response: CrawlProgressResponse = {
       session: sessionWithCurrentUrl,
       pages,
@@ -72,6 +77,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         totalFound: pages.length,
         successful,
         errors,
+        uniquePages,
+        duplicateUrls,
         statusCodes,
         pageTypes,
       },

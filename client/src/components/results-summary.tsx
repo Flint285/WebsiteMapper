@@ -97,12 +97,23 @@ export default function ResultsSummary({ sessionId }: ResultsSummaryProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <div className="text-center p-4 bg-muted rounded-lg">
             <div className="text-3xl font-bold text-primary mb-2">{stats.totalFound.toLocaleString()}</div>
-            <div className="text-sm text-muted-foreground">Total Pages Found</div>
+            <div className="text-sm text-muted-foreground">Total URLs Found</div>
+          </div>
+          <div className="text-center p-4 bg-blue-50 rounded-lg">
+            <div className="text-3xl font-bold text-blue-600 mb-2">{stats.uniquePages?.toLocaleString() || 0}</div>
+            <div className="text-sm text-muted-foreground">Unique Pages</div>
           </div>
           <div className="text-center p-4 bg-green-50 rounded-lg">
             <div className="text-3xl font-bold text-green-600 mb-2">{stats.successful.toLocaleString()}</div>
             <div className="text-sm text-muted-foreground">Successful Pages</div>
           </div>
+          <div className="text-center p-4 bg-amber-50 rounded-lg">
+            <div className="text-3xl font-bold text-amber-600 mb-2">{stats.duplicateUrls?.toLocaleString() || 0}</div>
+            <div className="text-sm text-muted-foreground">Duplicate URLs</div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
           <div className="text-center p-4 bg-red-50 rounded-lg">
             <div className="text-3xl font-bold text-red-600 mb-2">{stats.errors.toLocaleString()}</div>
             <div className="text-sm text-muted-foreground">Error Pages</div>
@@ -110,6 +121,12 @@ export default function ResultsSummary({ sessionId }: ResultsSummaryProps) {
           <div className="text-center p-4 bg-orange-50 rounded-lg">
             <div className="text-3xl font-bold text-orange-600 mb-2">{avgLoadTime}s</div>
             <div className="text-sm text-muted-foreground">Avg Load Time</div>
+          </div>
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <div className="text-3xl font-bold text-gray-600 mb-2">
+              {stats.uniquePages && stats.totalFound ? ((stats.uniquePages / stats.totalFound) * 100).toFixed(1) : 0}%
+            </div>
+            <div className="text-sm text-muted-foreground">Content Uniqueness</div>
           </div>
         </div>
 

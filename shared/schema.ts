@@ -68,6 +68,8 @@ export type CrawlProgressResponse = {
     totalFound: number;
     successful: number;
     errors: number;
+    uniquePages: number;
+    duplicateUrls: number;
     statusCodes: Record<string, number>;
     pageTypes: Record<string, number>;
   };

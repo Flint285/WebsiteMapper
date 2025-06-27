@@ -68,13 +68,16 @@ export class MemStorage implements IStorage {
   async createCrawledPage(insertPage: InsertCrawledPage): Promise<CrawledPage> {
     const id = this.currentPageId++;
     const page: CrawledPage = {
-      ...insertPage,
       id,
-      discoveredAt: new Date(),
-      size: insertPage.size || null,
+      url: insertPage.url,
+      sessionId: insertPage.sessionId,
       statusCode: insertPage.statusCode || null,
       contentType: insertPage.contentType || null,
+      size: insertPage.size || null,
       loadTime: insertPage.loadTime || null,
+      depth: insertPage.depth,
+      contentHash: insertPage.contentHash ?? null,
+      discoveredAt: new Date(),
     };
     this.crawledPages.set(id, page);
     return page;
