@@ -121,7 +121,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const csv = [
       "URL,Status Code,Content Type,Size (bytes),Load Time (ms),Depth",
       ...pages.map(page => 
-        `"${page.url}",${page.statusCode || ''},${page.contentType || ''},${page.size || ''},${page.loadTime || ''},${page.depth}`
+        `"${page.url.replace(/"/g, '""')}",${page.statusCode || ''},"${(page.contentType || '').replace(/"/g, '""')}",${page.size || ''},${page.loadTime || ''},${page.depth}`
       )
     ].join('\n');
 
@@ -200,17 +200,23 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
       // Generate content hash for duplicate detection
       let contentHash = null;
       if (response.data && response.status >= 200 && response.status < 300) {
-        // For HTML content, extract meaningful content without scripts/styles
-        if (response.headers['content-type']?.includes('text/html')) {
-          const $ = cheerio.load(response.data);
-          // Remove script, style, and comment nodes for better content comparison
-          $('script, style, noscript').remove();
-          // Get normalized text content
-          const normalizedContent = $('body').text().replace(/\s+/g, ' ').trim();
-          contentHash = createHash('sha256').update(normalizedContent).digest('hex');
-        } else {
-          // For non-HTML content, hash the entire response
-          contentHash = createHash('sha256').update(response.data).digest('hex');
+        try {
+          // For HTML content, extract meaningful content without scripts/styles
+          if (response.headers['content-type']?.includes('text/html')) {
+            const $ = cheerio.load(response.data);
+            // Remove script, style, and comment nodes for better content comparison
+            $('script, style, noscript').remove();
+            // Get normalized text content
+            const normalizedContent = $('body').text().replace(/\s+/g, ' ').trim();
+            contentHash = createHash('sha256').update(normalizedContent, 'utf8').digest('hex');
+          } else {
+            // For non-HTML content, hash the entire response
+            const content = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
+            contentHash = createHash('sha256').update(content, 'utf8').digest('hex');
+          }
+        } catch (error) {
+          console.warn(`Failed to generate content hash for ${current.url}:`, error);
+          contentHash = null;
         }
       }
 
@@ -233,7 +239,7 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
         if (current.depth < maxDepth && response.headers['content-type']?.includes('text/html')) {
           const links = extractLinks(response.data, startUrl);
           links.forEach(link => {
-            if (!visited.has(link) && queue.length + totalPages < maxPages) {
+            if (!visited.has(link) && !queue.some(q => q.url === link) && queue.length + totalPages < maxPages) {
               queue.push({ url: link, depth: current.depth + 1 });
             }
           });
@@ -323,7 +329,7 @@ async function getSitemapUrls(baseUrl: string): Promise<string[]> {
 
 function extractLinks(html: string, baseUrl: string): string[] {
   const $ = cheerio.load(html);
-  const links: string[] = [];
+  const linkSet = new Set<string>();
   const base = new URL(baseUrl);
   
   $('a[href]').each((_, element) => {
@@ -360,7 +366,7 @@ function extractLinks(html: string, baseUrl: string): string[] {
         
         // Remove hash fragment for consistency
         url.hash = '';
-        links.push(url.toString());
+        linkSet.add(url.toString());
         
       } catch (e) {
         // Invalid URL, skip
@@ -368,7 +374,7 @@ function extractLinks(html: string, baseUrl: string): string[] {
     }
   });
   
-  return Array.from(new Set(links)); // Remove duplicates
+  return Array.from(linkSet);
 }
 
 function broadcastProgress(sessionId: number, data: any) {

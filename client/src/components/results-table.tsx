@@ -60,6 +60,10 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
   }
 
   const totalPages = Math.ceil(filteredPages.length / itemsPerPage);
+  // Reset to first page if current page is beyond available pages
+  if (currentPage > totalPages && totalPages > 0) {
+    setCurrentPage(1);
+  }
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedPages = filteredPages.slice(startIndex, startIndex + itemsPerPage);
 
