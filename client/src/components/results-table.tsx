@@ -120,20 +120,68 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
   };
 
   if (isLoading) {
-    return null;
+    return (
+      <Card>
+        <CardHeader>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <div className="h-6 bg-gray-200 rounded w-32 animate-pulse"></div>
+              <div className="h-6 bg-gray-200 rounded w-24 animate-pulse"></div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="h-12 bg-gray-100 rounded animate-pulse"></div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   // Don't show table until we have some results
   if (pages.length === 0) {
-    return null;
+    return (
+      <Card>
+        <CardContent className="py-12 text-center">
+          <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+            <Search className="h-8 w-8 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No pages discovered yet</h3>
+          <p className="text-gray-500 text-sm max-w-sm mx-auto">
+            Start a crawl to discover and analyze pages on your website. Results will appear here as they're found.
+          </p>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
     <Card>
       <CardHeader>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <CardTitle className="mb-4 sm:mb-0">Discovered Pages</CardTitle>
-          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <CardTitle className="mb-2 sm:mb-0">Discovered Pages ({filteredPages.length})</CardTitle>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="unique-only"
+                checked={showUniqueOnly}
+                onCheckedChange={handleUniqueToggle}
+              />
+              <Label htmlFor="unique-only" className="text-sm font-medium whitespace-nowrap">
+                Unique content only
+              </Label>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="relative">
               <Input
                 placeholder="Filter URLs..."
@@ -144,7 +192,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-[180px]">
+              <SelectTrigger>
                 <SelectValue placeholder="All Status Codes" />
               </SelectTrigger>
               <SelectContent>
@@ -156,7 +204,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
               </SelectContent>
             </Select>
             <Select value={itemsPerPage.toString()} onValueChange={handlePageSizeChange}>
-              <SelectTrigger className="w-full sm:w-[120px]">
+              <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -167,35 +215,47 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
                 <SelectItem value="250">250 per page</SelectItem>
               </SelectContent>
             </Select>
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="unique-only"
-                checked={showUniqueOnly}
-                onCheckedChange={handleUniqueToggle}
-              />
-              <Label htmlFor="unique-only" className="text-sm font-medium">
-                Unique content only
-              </Label>
-            </div>
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>URL</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Size</TableHead>
-                <TableHead>Load Time</TableHead>
-                <TableHead>Content</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedPages.map((page: any) => (
+        {filteredPages.length === 0 ? (
+          <div className="py-12 text-center">
+            <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <Search className="h-6 w-6 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No matching results</h3>
+            <p className="text-gray-500 text-sm max-w-sm mx-auto mb-4">
+              No pages match your current filters. Try adjusting your search terms or filters.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setSearchFilter("");
+                setStatusFilter("");
+                setShowUniqueOnly(false);
+              }}
+            >
+              Clear all filters
+            </Button>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>URL</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Size</TableHead>
+                  <TableHead>Load Time</TableHead>
+                  <TableHead>Content</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedPages.map((page: any) => (
                 <TableRow key={page.id}>
                   <TableCell>
                     <div className="flex items-center">
@@ -253,12 +313,13 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
 
-        {totalPages > 1 && (
+        {filteredPages.length > 0 && totalPages > 1 && (
           <div className="flex items-center justify-between mt-4 pt-4 border-t">
             <div className="text-sm text-muted-foreground">
               Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredPages.length)} of{" "}

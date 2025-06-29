@@ -18,11 +18,13 @@ export default function CrawlerPage() {
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-4 sm:py-0 sm:h-16">
+            <div className="flex items-center mb-2 sm:mb-0">
               <Bug className="text-primary text-2xl mr-3 h-8 w-8" />
-              <h1 className="text-xl font-medium text-foreground">Website Page Crawler</h1>
-              <span className="ml-3 px-2 py-1 text-xs font-semibold bg-orange-100 text-orange-800 rounded-full">BETA</span>
+              <div className="flex flex-col sm:flex-row sm:items-center">
+                <h1 className="text-xl font-medium text-foreground">Website Page Crawler</h1>
+                <span className="ml-0 sm:ml-3 mt-1 sm:mt-0 px-2 py-1 text-xs font-semibold bg-orange-100 text-orange-800 rounded-full w-fit">BETA</span>
+              </div>
             </div>
             <div className="text-sm text-muted-foreground">
               Professional SEO Analysis Tool

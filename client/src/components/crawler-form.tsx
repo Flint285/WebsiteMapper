@@ -66,12 +66,13 @@ export default function CrawlerForm({ onSessionStart }: CrawlerFormProps) {
             Analyze Website Pages
           </h2>
           <p className="text-muted-foreground text-center mb-6">
-            Enter a website URL to crawl and count all publicly accessible pages
+            Discover and analyze all pages on a website, including duplicate content detection and SEO insights
           </p>
 
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <Label htmlFor="url">Website URL</Label>
+              <Label htmlFor="url" className="text-sm font-medium">Website URL</Label>
+              <p className="text-xs text-muted-foreground mb-2">Enter the homepage URL of the website you want to analyze</p>
               <div className="relative">
                 <Input
                   id="url"
@@ -91,7 +92,8 @@ export default function CrawlerForm({ onSessionStart }: CrawlerFormProps) {
 
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1">
-                <Label htmlFor="maxPages">Max Pages (Optional)</Label>
+                <Label htmlFor="maxPages" className="text-sm font-medium">Max Pages</Label>
+                <p className="text-xs text-muted-foreground mb-2">Limit the number of pages to crawl (1-10,000)</p>
                 <Input
                   id="maxPages"
                   type="number"
@@ -107,7 +109,8 @@ export default function CrawlerForm({ onSessionStart }: CrawlerFormProps) {
                 )}
               </div>
               <div className="flex-1">
-                <Label htmlFor="maxDepth">Max Depth</Label>
+                <Label htmlFor="maxDepth" className="text-sm font-medium">Crawl Depth</Label>
+                <p className="text-xs text-muted-foreground mb-2">How deep to follow links from the homepage</p>
                 <Select
                   value={form.watch("maxDepth")?.toString()}
                   onValueChange={(value) => form.setValue("maxDepth", parseInt(value))}
@@ -116,10 +119,10 @@ export default function CrawlerForm({ onSessionStart }: CrawlerFormProps) {
                     <SelectValue placeholder="Select depth" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="3">3 levels</SelectItem>
-                    <SelectItem value="5">5 levels</SelectItem>
-                    <SelectItem value="10">10 levels</SelectItem>
-                    <SelectItem value="20">20 levels</SelectItem>
+                    <SelectItem value="3">3 levels (recommended)</SelectItem>
+                    <SelectItem value="5">5 levels (thorough)</SelectItem>
+                    <SelectItem value="10">10 levels (deep scan)</SelectItem>
+                    <SelectItem value="20">20 levels (comprehensive)</SelectItem>
                   </SelectContent>
                 </Select>
                 {form.formState.errors.maxDepth && (
