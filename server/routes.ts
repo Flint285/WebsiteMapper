@@ -193,6 +193,8 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
       const response = await axios.get(current.url, {
         timeout: 10000,
         maxRedirects: 5,
+        maxContentLength: 50 * 1024 * 1024, // 50MB limit
+        maxBodyLength: 50 * 1024 * 1024, // 50MB limit
         validateStatus: () => true, // Don't throw on 4xx/5xx
       });
       const loadTime = Date.now() - startTime;
@@ -285,16 +287,21 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
 
   // Mark as completed and cleanup
   const finalStatus = activeCrawls.get(sessionId)?.shouldStop ? 'stopped' : 'completed';
-  await storage.updateCrawlSession(sessionId, {
-    status: finalStatus,
-    completedAt: new Date(),
-    totalPages,
-    successfulPages,
-    errorPages,
-  });
-
-  // Clean up active crawl tracking
-  activeCrawls.delete(sessionId);
+  
+  try {
+    await storage.updateCrawlSession(sessionId, {
+      status: finalStatus,
+      completedAt: new Date(),
+      totalPages,
+      successfulPages,
+      errorPages,
+    });
+  } catch (error) {
+    console.error(`Failed to update session ${sessionId}:`, error);
+  } finally {
+    // Always clean up active crawl tracking
+    activeCrawls.delete(sessionId);
+  }
 
   broadcastProgress(sessionId, { 
     totalPages, 
