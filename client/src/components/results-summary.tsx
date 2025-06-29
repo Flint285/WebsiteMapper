@@ -63,7 +63,23 @@ export default function ResultsSummary({ sessionId }: ResultsSummaryProps) {
   };
 
   if (isLoading || !session || !stats) {
-    return null;
+    return (
+      <Card className="mb-8">
+        <CardHeader>
+          <div className="h-6 bg-gray-200 rounded w-40 animate-pulse"></div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="bg-gray-100 p-4 rounded-lg">
+                <div className="h-4 bg-gray-200 rounded w-20 mb-2 animate-pulse"></div>
+                <div className="h-8 bg-gray-200 rounded w-12 animate-pulse"></div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   // Don't show summary until we have some results

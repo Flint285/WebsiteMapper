@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Globe, Play } from "lucide-react";
+import { Globe, Play, Loader2, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -138,9 +138,23 @@ export default function CrawlerForm({ onSessionStart }: CrawlerFormProps) {
               className="w-full bg-primary hover:bg-primary/90"
               disabled={isSubmitting}
             >
-              <Play className="mr-2 h-4 w-4" />
+              {isSubmitting ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Play className="mr-2 h-4 w-4" />
+              )}
               {isSubmitting ? "Starting Crawl..." : "Start Crawling"}
             </Button>
+            
+            <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-start space-x-2">
+                <Info className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                <div className="text-xs text-blue-700">
+                  <p className="font-medium mb-1">How it works:</p>
+                  <p>The crawler will discover pages by following links, check for duplicates using content analysis, and provide SEO insights including page count, status codes, and load times.</p>
+                </div>
+              </div>
+            </div>
           </form>
         </div>
       </CardContent>
