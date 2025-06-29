@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Search, ExternalLink, Copy, FileText, File, Image } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -60,10 +60,14 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
   }
 
   const totalPages = Math.ceil(filteredPages.length / itemsPerPage);
+  
   // Reset to first page if current page is beyond available pages
-  if (currentPage > totalPages && totalPages > 0) {
-    setCurrentPage(1);
-  }
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(1);
+    }
+  }, [currentPage, totalPages]);
+  
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedPages = filteredPages.slice(startIndex, startIndex + itemsPerPage);
 

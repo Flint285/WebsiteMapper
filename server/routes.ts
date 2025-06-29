@@ -163,7 +163,8 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
     const sitemapUrls = await getSitemapUrls(startUrl);
     sitemapUrls.forEach(url => {
       if (!visited.has(url) && queue.length < maxPages) {
-        queue.push({ url, depth: 1 });
+        // Sitemap URLs should be treated as depth 0 since they're direct site content
+        queue.push({ url, depth: 0 });
       }
     });
   } catch (e) {
@@ -275,6 +276,7 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
         size: 0,
         loadTime: 0,
         depth: current.depth,
+        contentHash: null,
       });
 
       await storage.updateCrawlSession(sessionId, {

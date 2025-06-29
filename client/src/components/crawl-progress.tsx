@@ -36,6 +36,9 @@ export default function CrawlProgress({ sessionId }: CrawlProgressProps) {
       }, 1000);
 
       return () => clearInterval(interval);
+    } else {
+      // Reset elapsed time when not running
+      setElapsedTime(0);
     }
   }, [session?.status, session?.startedAt]);
 

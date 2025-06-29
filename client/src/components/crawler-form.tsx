@@ -12,9 +12,9 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
 const crawlFormSchema = z.object({
-  url: z.string().url("Please enter a valid URL"),
-  maxPages: z.number().min(1).max(10000),
-  maxDepth: z.number().min(1).max(20),
+  url: z.string().min(1, "URL is required").url("Please enter a valid URL (e.g., https://example.com)"),
+  maxPages: z.number().min(1, "Must be at least 1 page").max(10000, "Maximum 10,000 pages allowed"),
+  maxDepth: z.number().min(1, "Must be at least 1 level deep").max(20, "Maximum 20 levels allowed"),
 });
 
 type CrawlFormData = z.infer<typeof crawlFormSchema>;
