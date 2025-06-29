@@ -112,6 +112,16 @@ WebsiteMapper is a professional SEO analysis tool that provides web crawling cap
 - Maintains SEO-relevant URL variations for analysis
 
 ## Changelog
+- June 30, 2025: Final bug hunt completed - additional critical fixes:
+  - Fixed sitemap URL depth assignment for proper crawl hierarchy
+  - Added explicit contentHash field for error page records
+  - Enhanced timer cleanup in progress component to prevent memory leaks
+  - Fixed potential infinite re-render in pagination with useEffect
+  - Improved form validation with detailed error messages
+  - Added content hash to CSV export for complete duplicate analysis
+  - Enhanced domain matching with www normalization
+  - Added request size limits (10MB) for API security
+  - Fixed subdomain handling to prevent unintended cross-domain crawling
 - June 30, 2025: Major UX/UI improvements implemented:
   - Enhanced mobile responsiveness with flexible header layout and stacked controls
   - Added comprehensive loading states with skeleton UI for all components

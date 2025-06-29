@@ -119,9 +119,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     const csv = [
-      "URL,Status Code,Content Type,Size (bytes),Load Time (ms),Depth",
+      "URL,Status Code,Content Type,Size (bytes),Load Time (ms),Depth,Content Hash",
       ...pages.map(page => 
-        `"${page.url.replace(/"/g, '""')}",${page.statusCode || ''},"${(page.contentType || '').replace(/"/g, '""')}",${page.size || ''},${page.loadTime || ''},${page.depth}`
+        `"${page.url.replace(/"/g, '""')}",${page.statusCode || ''},"${(page.contentType || '').replace(/"/g, '""')}",${page.size || ''},${page.loadTime || ''},${page.depth},"${page.contentHash || ''}"`
       )
     ].join('\n');
 
@@ -347,8 +347,10 @@ function extractLinks(html: string, baseUrl: string): string[] {
       try {
         const url = new URL(href, baseUrl);
         
-        // Only include links from the same domain
-        if (url.hostname !== base.hostname) {
+        // Only include links from the exact same hostname (with www normalization)
+        const baseHost = base.hostname.replace(/^www\./, '');
+        const urlHost = url.hostname.replace(/^www\./, '');
+        if (urlHost !== baseHost) {
           return;
         }
         
