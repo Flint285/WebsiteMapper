@@ -18,17 +18,24 @@ export interface IStorage {
   
   // Session tracking
   setCurrentUrl(sessionId: number, url: string): Promise<void>;
+  
+  // PDF link tracking
+  addPdfLink(sessionId: number, url: string): Promise<void>;
+  getPdfLinkCount(sessionId: number): Promise<number>;
+  getPdfLinks(sessionId: number): Promise<string[]>;
 }
 
 export class MemStorage implements IStorage {
   private crawlSessions: Map<number, CrawlSession>;
   private crawledPages: Map<number, CrawledPage>;
+  private pdfLinks: Map<number, Set<string>>; // sessionId -> set of PDF URLs
   private currentSessionId: number;
   private currentPageId: number;
 
   constructor() {
     this.crawlSessions = new Map();
     this.crawledPages = new Map();
+    this.pdfLinks = new Map();
     this.currentSessionId = 1;
     this.currentPageId = 1;
   }
@@ -121,6 +128,23 @@ export class MemStorage implements IStorage {
       session.currentUrl = url;
       this.crawlSessions.set(sessionId, session);
     }
+  }
+
+  async addPdfLink(sessionId: number, url: string): Promise<void> {
+    if (!this.pdfLinks.has(sessionId)) {
+      this.pdfLinks.set(sessionId, new Set());
+    }
+    this.pdfLinks.get(sessionId)!.add(url);
+  }
+
+  async getPdfLinkCount(sessionId: number): Promise<number> {
+    const pdfSet = this.pdfLinks.get(sessionId);
+    return pdfSet ? pdfSet.size : 0;
+  }
+
+  async getPdfLinks(sessionId: number): Promise<string[]> {
+    const pdfSet = this.pdfLinks.get(sessionId);
+    return pdfSet ? Array.from(pdfSet) : [];
   }
 }
 

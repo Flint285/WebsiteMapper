@@ -70,6 +70,7 @@ export type CrawlProgressResponse = {
     errors: number;
     uniquePages: number;
     duplicateUrls: number;
+    pdfLinks: number;
     statusCodes: Record<string, number>;
     pageTypes: Record<string, number>;
   };

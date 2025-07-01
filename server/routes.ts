@@ -69,6 +69,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const uniqueHashes = await storage.getUniqueContentHashes(sessionId);
     const uniquePages = uniqueHashes.length;
     const duplicateUrls = pages.length - uniquePages;
+    
+    // Get PDF link count
+    const pdfLinks = await storage.getPdfLinkCount(sessionId);
 
     const response: CrawlProgressResponse = {
       session: sessionWithCurrentUrl,
@@ -79,6 +82,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         errors,
         uniquePages,
         duplicateUrls,
+        pdfLinks,
         statusCodes,
         pageTypes,
       },
