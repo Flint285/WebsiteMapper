@@ -244,7 +244,14 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
         
         // Extract links if it's HTML and we haven't reached max depth
         if (current.depth < maxDepth && response.headers['content-type']?.includes('text/html')) {
-          const links = extractLinks(response.data, startUrl);
+          const { links, pdfLinks } = extractLinksAndPdfs(response.data, startUrl);
+          
+          // Track PDF links
+          for (const pdfLink of pdfLinks) {
+            await storage.addPdfLink(sessionId, pdfLink);
+          }
+          
+          // Add regular links to queue
           links.forEach(link => {
             if (!visited.has(link) && !queue.some(q => q.url === link) && queue.length + totalPages < maxPages) {
               queue.push({ url: link, depth: current.depth + 1 });
@@ -340,9 +347,10 @@ async function getSitemapUrls(baseUrl: string): Promise<string[]> {
   return urls;
 }
 
-function extractLinks(html: string, baseUrl: string): string[] {
+function extractLinksAndPdfs(html: string, baseUrl: string): { links: string[], pdfLinks: string[] } {
   const $ = cheerio.load(html);
   const linkSet = new Set<string>();
+  const pdfLinkSet = new Set<string>();
   const base = new URL(baseUrl);
   
   $('a[href]').each((_, element) => {
@@ -372,9 +380,16 @@ function extractLinks(html: string, baseUrl: string): string[] {
           return;
         }
         
-        // Skip common non-page file extensions
+        // Check for PDF links
         const pathname = url.pathname.toLowerCase();
-        const skipExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.pdf', '.doc', '.docx', '.zip', '.mp3', '.mp4', '.avi'];
+        if (pathname.endsWith('.pdf')) {
+          url.hash = '';
+          pdfLinkSet.add(url.toString());
+          return;
+        }
+        
+        // Skip other non-page file extensions
+        const skipExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.doc', '.docx', '.zip', '.mp3', '.mp4', '.avi'];
         if (skipExtensions.some(ext => pathname.endsWith(ext))) {
           return;
         }
@@ -389,7 +404,14 @@ function extractLinks(html: string, baseUrl: string): string[] {
     }
   });
   
-  return Array.from(linkSet);
+  return {
+    links: Array.from(linkSet),
+    pdfLinks: Array.from(pdfLinkSet)
+  };
+}
+
+function extractLinks(html: string, baseUrl: string): string[] {
+  return extractLinksAndPdfs(html, baseUrl).links;
 }
 
 function broadcastProgress(sessionId: number, data: any) {
