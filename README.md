@@ -1,238 +1,200 @@
-# WebsiteMapper 🔍
+# WebsiteMapper
 
-A professional SEO analysis tool that provides comprehensive web crawling capabilities with real-time progress tracking, duplicate content detection, and intelligent filtering. Built with modern web technologies for reliable website analysis and SEO insights.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-43853D?logo=node.js&logoColor=white)](https://nodejs.org/)
 
-![Status](https://img.shields.io/badge/status-production--ready-green)
-![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue)
-![React](https://img.shields.io/badge/React-18-blue)
-![Express](https://img.shields.io/badge/Express-latest-green)
+**Professional SEO Analysis & Web Crawling Platform**
 
-## ✨ Key Features
+WebsiteMapper is a powerful, enterprise-grade web crawling application designed for comprehensive website analysis, duplicate content detection, and SEO insights. Built with modern web technologies, it provides real-time crawling capabilities with advanced content analysis features.
 
-### 🕷️ **Advanced Web Crawling**
-- **Smart Link Discovery**: Follows internal links with configurable depth (3-20 levels)
-- **Sitemap Integration**: Automatically discovers and processes XML sitemaps
-- **Intelligent Filtering**: Excludes non-page content (images, downloads, anchor fragments)
-- **Concurrent Processing**: Efficient crawling with built-in rate limiting
-- **Large File Support**: Handles pages up to 50MB with proper error handling
+![WebsiteMapper Interface](https://via.placeholder.com/800x400/4F46E5/FFFFFF?text=WebsiteMapper+Interface)
 
-### 🔍 **Duplicate Content Detection**
-- **Content Hashing**: SHA-256 based analysis to identify identical content
-- **Smart Comparison**: Normalizes HTML content for accurate duplicate detection
-- **Visual Indicators**: Clear badges showing unique vs duplicate content
-- **Filter Toggle**: View all URLs or unique content only
-- **SEO Insights**: Understand true page count vs URL variations
+## ✨ Features
 
-### 📊 **Real-Time Analytics**
-- **Live Progress Tracking**: See pages discovered in real-time
-- **Performance Metrics**: Load times, response codes, content types
-- **Status Code Analysis**: Comprehensive HTTP status tracking
-- **Error Monitoring**: Detailed error reporting and handling
-- **Content Type Detection**: HTML, PDF, images, and other file types
+### 🔍 **Advanced Web Crawling**
+- **Intelligent Link Discovery**: Automatically discovers pages through link following and sitemap parsing
+- **Configurable Depth Control**: Set crawl depth from 1-20 levels for precise site exploration
+- **Scalable Page Limits**: Handle sites from small (10 pages) to enterprise-scale (10,000+ pages)
+- **Smart URL Filtering**: Excludes non-page content while maintaining SEO-relevant variations
 
-### 💻 **Professional UI/UX**
-- **Responsive Design**: Works seamlessly on desktop and mobile
-- **Loading States**: Skeleton UI and progress indicators
-- **Advanced Filtering**: Search, status code, and content filters
-- **Pagination Control**: 10-250 results per page with smart navigation
-- **Export Functionality**: Download results as properly formatted CSV
+### 📊 **Content Analysis**
+- **Duplicate Content Detection**: Advanced SHA-256 content hashing identifies duplicate pages
+- **PDF Document Discovery**: Automatically finds and catalogs PDF files linked from web pages
+- **Content Type Classification**: Categorizes discovered content (HTML, PDF, Images, etc.)
+- **Status Code Monitoring**: Comprehensive HTTP status tracking with error categorization
+
+### 📈 **Real-Time Insights**
+- **Live Progress Tracking**: Real-time updates during crawling with current page information
+- **Performance Metrics**: Load time analysis and response size measurement
+- **Statistical Dashboard**: Comprehensive analytics with visual data representation
+- **Export Capabilities**: CSV export with detailed crawl results and PDF link inventory
+
+### 🎨 **Modern User Experience**
+- **Glass-morphism Design**: Contemporary UI with gradient backgrounds and backdrop blur effects
+- **Responsive Interface**: Mobile-optimized design that works across all device sizes
+- **Interactive Controls**: Intuitive filters, pagination, and search functionality
+- **Professional Branding**: Cohesive design system with consistent visual hierarchy
 
 ## 🚀 Quick Start
 
-1. **Clone and Install**
+### Prerequisites
+
+- **Node.js** 18+ 
+- **npm** or **yarn**
+- **PostgreSQL** (optional - uses in-memory storage by default)
+
+### Installation
+
+1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd WebsiteMapper
+   git clone https://github.com/yourusername/websitemapper.git
+   cd websitemapper
+   ```
+
+2. **Install dependencies**
+   ```bash
    npm install
    ```
 
-2. **Start Development Server**
+3. **Start the development server**
    ```bash
    npm run dev
    ```
-   Access the application at [http://localhost:5000](http://localhost:5000)
 
-3. **Start Crawling**
-   - Enter a website URL (e.g., `https://example.com`)
-   - Configure max pages (1-10,000) and crawl depth (3-20 levels)
-   - Click "Start Crawling" and watch real-time progress
-   - Filter and export results when complete
+4. **Open your browser**
+   ```
+   http://localhost:5000
+   ```
+
+### Production Deployment
+
+1. **Build the application**
+   ```bash
+   npm run build
+   ```
+
+2. **Start the production server**
+   ```bash
+   npm start
+   ```
+
+## 📋 Usage
+
+### Basic Crawling
+
+1. **Enter Website URL**: Input the homepage URL you want to analyze
+2. **Configure Settings**: 
+   - Set maximum pages to crawl (1-10,000)
+   - Choose crawl depth (1-20 levels)
+3. **Start Analysis**: Click "Start Crawling" to begin the process
+4. **Monitor Progress**: Watch real-time updates as pages are discovered
+5. **Review Results**: Analyze the comprehensive results dashboard
+6. **Export Data**: Download detailed CSV reports with all findings
+
+### Advanced Features
+
+#### Duplicate Content Analysis
+- Toggle "Unique content only" to filter duplicate pages
+- Review content uniqueness percentage in the statistics
+- Identify pages with identical content using advanced hashing
+
+#### PDF Document Discovery
+- Automatically discovers PDF files linked from web pages
+- Separate PDF statistics in the results summary
+- PDF links included in CSV export for comprehensive reporting
+
+#### Performance Monitoring
+- Track average page load times
+- Monitor response sizes and status codes
+- Identify performance bottlenecks across the site
 
 ## 🏗️ Architecture
 
-### **Frontend (React + TypeScript)**
+### Technology Stack
+
+#### Frontend
+- **React 18** with TypeScript for type-safe development
+- **Vite** for fast development and optimized production builds
+- **shadcn/ui** components built on Radix UI primitives
+- **Tailwind CSS** for utility-first styling
+- **TanStack Query** for efficient server state management
+- **Wouter** for lightweight client-side routing
+
+#### Backend
+- **Node.js** with Express.js REST API
+- **TypeScript** for end-to-end type safety
+- **Zod** for runtime validation and schema definition
+- **Axios & Cheerio** for web crawling and HTML parsing
+- **In-memory storage** with optional PostgreSQL support
+
+#### Development Tools
+- **esbuild** for fast production bundling
+- **Drizzle ORM** for type-safe database operations
+- **React Hook Form** with Zod validation
+
+### Project Structure
+
 ```
-/client/src/
-├── components/          # UI components
-│   ├── crawler-form.tsx     # Crawl configuration form
-│   ├── crawl-progress.tsx   # Real-time progress display
-│   ├── results-summary.tsx  # Statistics and export
-│   ├── results-table.tsx    # Paginated results with filtering
-│   └── ui/                  # Reusable UI components (shadcn/ui)
-├── pages/               # Application pages
-├── hooks/               # Custom React hooks
-└── lib/                 # Utilities and query client
+websitemapper/
+├── client/                 # React frontend application
+│   ├── src/
+│   │   ├── components/     # Reusable UI components
+│   │   ├── pages/          # Page components
+│   │   ├── hooks/          # Custom React hooks
+│   │   └── lib/            # Utility functions
+├── server/                 # Express.js backend
+│   ├── routes.ts          # API route definitions
+│   ├── storage.ts         # Storage interface and implementations
+│   └── index.ts           # Server entry point
+├── shared/                 # Shared types and schemas
+│   └── schema.ts          # Zod schemas and TypeScript types
+└── dist/                  # Production build output
 ```
-
-### **Backend (Express + TypeScript)**
-```
-/server/
-├── index.ts             # Server entry point
-├── routes.ts            # API endpoints and crawling logic
-├── storage.ts           # Data storage interface (in-memory)
-└── vite.ts              # Vite integration for development
-```
-
-### **Shared Types**
-```
-/shared/
-└── schema.ts            # Zod schemas and TypeScript types
-```
-
-## 🛠️ Technical Stack
-
-| **Frontend** | **Backend** | **Development** |
-|--------------|-------------|-----------------|
-| React 18 | Express.js | Vite |
-| TypeScript | Node.js | TypeScript |
-| TanStack Query | Axios | Tailwind CSS |
-| shadcn/ui | Cheerio | Zod Validation |
-| Wouter Router | Crypto API | Hot Reload |
-
-## 📋 API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/crawl/start` | Start a new crawl session |
-| `GET` | `/api/crawl/:sessionId` | Get crawl progress and results |
-| `POST` | `/api/crawl/:sessionId/stop` | Stop an active crawl |
-| `GET` | `/api/crawl/:sessionId/export` | Export results as CSV |
-
-### **Sample API Request**
-```javascript
-// Start a crawl
-const response = await fetch('/api/crawl/start', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    url: 'https://example.com',
-    maxPages: 1000,
-    maxDepth: 5
-  })
-});
-```
-
-## 💾 Data Storage
-
-**Default**: In-memory storage for immediate use and testing
-- No database setup required
-- Data persists during application runtime
-- Perfect for development and analysis sessions
-
-**Optional**: PostgreSQL with Drizzle ORM
-- Set `DATABASE_URL` environment variable
-- Run `npm run db:push` for migrations
-- Persistent storage across restarts
 
 ## 🔧 Configuration
 
-### **Environment Variables**
-```bash
-# Optional: Database connection
-DATABASE_URL=postgresql://user:password@localhost:5432/websitemapper
+### Environment Variables
 
+```bash
+# Optional PostgreSQL database connection
+DATABASE_URL=postgresql://username:password@localhost:5432/websitemapper
+
+# Server configuration
+PORT=5000
+NODE_ENV=production
+```
+
+### Database Setup (Optional)
+
+WebsiteMapper uses in-memory storage by default. For persistent storage:
+
+1. **Install PostgreSQL**
+2. **Set DATABASE_URL** environment variable
+3. **Run migrations**
+   ```bash
+   npm run db:push
+   ```
+
+## 🛠️ Development
+
+### Available Scripts
+
+```bash
 # Development
-NODE_ENV=development
+npm run dev          # Start development server with hot reload
+npm run check        # TypeScript type checking
+
+# Production
+npm run build        # Build for production
+npm start           # Start production server
+
+# Database (when using PostgreSQL)
+npm run db:push     # Apply database migrations
 ```
 
-### **Crawl Settings**
-- **Max Pages**: 1-10,000 pages per crawl
-- **Max Depth**: 1-20 levels deep from homepage
-- **Timeout**: 10 seconds per request
-- **Rate Limiting**: 100ms delay between requests
-- **File Size**: Up to 50MB per page
-
-## 🚀 Deployment
-
-### **Production Build**
-```bash
-npm run build
-npm start
-```
-
-### **Development**
-```bash
-npm run dev
-```
-
-### **Available Scripts**
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server with hot reload |
-| `npm run build` | Build for production |
-| `npm start` | Run production build |
-| `npm run check` | TypeScript type checking |
-| `npm run db:push` | Push database schema (if using PostgreSQL) |
-
-## 🔍 Use Cases
-
-### **SEO Professionals**
-- Audit website structure and page count
-- Identify duplicate content issues
-- Analyze page performance and load times
-- Export data for client reports
-
-### **Web Developers**
-- Test website crawlability
-- Identify broken links and error pages
-- Analyze site architecture depth
-- Monitor page performance metrics
-
-### **Content Managers**
-- Inventory all website pages
-- Find duplicate content across different URLs
-- Track content types and file sizes
-- Export comprehensive site maps
-
-## 🐛 Troubleshooting
-
-### **Common Issues**
-
-**Crawl not starting:**
-- Verify the URL includes `http://` or `https://`
-- Check if the website allows crawling (robots.txt)
-- Ensure the domain is accessible
-
-**Missing pages:**
-- Increase max depth for deeper crawling
-- Check if pages are linked from discoverable locations
-- Some pages may require authentication
-
-**Slow performance:**
-- Large websites take time to crawl completely
-- Use lower max pages setting for faster results
-- Consider the 100ms delay between requests
-
-### **Error Codes**
-- **200**: Success - page crawled successfully
-- **301/302**: Redirects - followed automatically
-- **404**: Not found - broken or removed pages
-- **500**: Server errors - website issues
-
-## 📈 Performance
-
-**Typical Performance:**
-- ~10-50 pages per minute depending on site speed
-- Memory usage scales with crawl size
-- Optimized for sites up to 10,000 pages
-
-**Optimizations:**
-- Content hashing for duplicate detection
-- Intelligent URL filtering
-- Concurrent request handling
-- Built-in rate limiting for server protection
-
-## 🤝 Contributing
+### Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -240,17 +202,61 @@ npm run dev
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 License
+## 📊 Performance
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+### Crawling Capabilities
+- **Speed**: 100ms delay between requests to respect server resources
+- **Concurrency**: Single-threaded with efficient queue management
+- **Memory**: Optimized Set-based duplicate detection for large sites
+- **Limits**: Configurable request size limits (50MB) for stability
 
-## 🙏 Acknowledgments
+### Scalability Features
+- **Efficient Storage**: In-memory caching with optional database persistence
+- **Real-time Updates**: WebSocket-ready architecture for live progress tracking
+- **Export Handling**: Streaming CSV generation for large datasets
+- **Error Recovery**: Comprehensive error handling and session cleanup
 
-- Built with [shadcn/ui](https://ui.shadcn.com/) for beautiful components
-- Powered by [Vite](https://vitejs.dev/) for lightning-fast development
-- Uses [TanStack Query](https://tanstack.com/query) for robust data fetching
-- Styled with [Tailwind CSS](https://tailwindcss.com/) for responsive design
+## 🔒 Security
+
+- **Input Validation**: Comprehensive Zod schema validation on all inputs
+- **URL Filtering**: Protection against malicious URLs and protocol attacks
+- **Request Limits**: Configurable size and timeout limits
+- **Domain Restriction**: Crawler respects same-domain boundaries
+- **Error Handling**: Secure error messages without information disclosure
+
+## 📈 Roadmap
+
+### Current Version (v1.0)
+- ✅ Basic web crawling functionality
+- ✅ Duplicate content detection
+- ✅ PDF link discovery
+- ✅ Real-time progress tracking
+- ✅ CSV export capabilities
+- ✅ Modern UI/UX design
+
+### Upcoming Features
+- 🔄 **Advanced SEO Analysis**: Meta tag analysis, heading structure, internal linking
+- 🔄 **Performance Insights**: Core Web Vitals, page speed analysis
+- 🔄 **Content Recommendations**: SEO improvement suggestions
+- 🔄 **Scheduled Crawls**: Automated periodic site analysis
+- 🔄 **Team Collaboration**: Multi-user support and shared reports
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🤝 Support
+
+- **Documentation**: Comprehensive guides in the `/docs` folder
+- **Issues**: Report bugs and request features via [GitHub Issues](https://github.com/yourusername/websitemapper/issues)
+- **Discussions**: Join the community in [GitHub Discussions](https://github.com/yourusername/websitemapper/discussions)
 
 ---
 
-**WebsiteMapper** - Professional SEO analysis made simple. 🚀
+<div align="center">
+
+**WebsiteMapper** - Professional SEO Analysis Made Simple
+
+[Website](https://websitemapper.com) • [Documentation](https://docs.websitemapper.com) • [API Reference](https://api.websitemapper.com)
+
+</div>
