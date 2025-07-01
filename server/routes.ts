@@ -162,6 +162,7 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
   activeCrawls.set(sessionId, { shouldStop: false, currentUrl: startUrl });
 
   const visited = new Set<string>();
+  const queued = new Set<string>(); // Track queued URLs for O(1) lookup
   const queue: Array<{ url: string; depth: number }> = [];
   let totalPages = 0;
   let successfulPages = 0;
@@ -169,14 +170,16 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
 
   // Add initial URL
   queue.push({ url: startUrl, depth: 0 });
+  queued.add(startUrl);
 
   // Try to get sitemap first
   try {
     const sitemapUrls = await getSitemapUrls(startUrl);
     sitemapUrls.forEach(url => {
-      if (!visited.has(url) && queue.length < maxPages) {
+      if (!visited.has(url) && !queued.has(url) && queue.length < maxPages) {
         // Sitemap URLs should be treated as depth 0 since they're direct site content
         queue.push({ url, depth: 0 });
+        queued.add(url);
       }
     });
   } catch (e) {
@@ -261,8 +264,9 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
           
           // Add regular links to queue
           links.forEach(link => {
-            if (!visited.has(link) && !queue.some(q => q.url === link) && queue.length + totalPages < maxPages) {
+            if (!visited.has(link) && !queued.has(link) && queue.length + totalPages < maxPages) {
               queue.push({ url: link, depth: current.depth + 1 });
+              queued.add(link);
             }
           });
         }
