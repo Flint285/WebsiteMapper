@@ -117,17 +117,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/crawl/:sessionId/export", async (req, res) => {
     const sessionId = parseInt(req.params.sessionId);
     const pages = await storage.getCrawledPagesBySession(sessionId);
+    const pdfLinks = await storage.getPdfLinks(sessionId);
     
-    if (pages.length === 0) {
+    if (pages.length === 0 && pdfLinks.length === 0) {
       return res.status(404).json({ error: "No pages found" });
     }
 
-    const csv = [
+    const csvSections = [
+      "CRAWLED PAGES",
       "URL,Status Code,Content Type,Size (bytes),Load Time (ms),Depth,Content Hash",
       ...pages.map(page => 
         `"${page.url.replace(/"/g, '""')}",${page.statusCode || ''},"${(page.contentType || '').replace(/"/g, '""')}",${page.size || ''},${page.loadTime || ''},${page.depth},"${page.contentHash || ''}"`
-      )
-    ].join('\n');
+      ),
+      "",
+      "PDF LINKS DISCOVERED",
+      "PDF URL",
+      ...pdfLinks.map(url => `"${url.replace(/"/g, '""')}"`)
+    ];
+
+    const csv = csvSections.join('\n');
 
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename="crawl-results.csv"');

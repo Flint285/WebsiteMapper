@@ -112,6 +112,12 @@ WebsiteMapper is a professional SEO analysis tool that provides web crawling cap
 - Maintains SEO-relevant URL variations for analysis
 
 ## Changelog
+- June 30, 2025: Added PDF link tracking and UI improvements:
+  - Implemented PDF link discovery and tracking system
+  - Added PDF statistics to results summary with purple badge display
+  - Enhanced CSV export to include separate PDF links section
+  - Expanded URL display area in results table for better readability
+  - URLs now show full path instead of truncated version
 - June 30, 2025: Final bug hunt completed - additional critical fixes:
   - Fixed sitemap URL depth assignment for proper crawl hierarchy
   - Added explicit contentHash field for error page records

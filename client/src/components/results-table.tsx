@@ -249,22 +249,22 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>URL</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Size</TableHead>
-                  <TableHead>Load Time</TableHead>
-                  <TableHead>Content</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="w-2/5 min-w-96">URL</TableHead>
+                  <TableHead className="w-20">Status</TableHead>
+                  <TableHead className="w-20">Type</TableHead>
+                  <TableHead className="w-20">Size</TableHead>
+                  <TableHead className="w-24">Load Time</TableHead>
+                  <TableHead className="w-20">Content</TableHead>
+                  <TableHead className="w-24">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {paginatedPages.map((page: any) => (
                 <TableRow key={page.id}>
-                  <TableCell>
+                  <TableCell className="w-2/5 min-w-96">
                     <div className="flex items-center">
                       {getContentTypeIcon(page.contentType || "")}
-                      <span className="font-mono text-sm truncate max-w-xs ml-2">
+                      <span className="font-mono text-sm break-all ml-2">
                         {page.url}
                       </span>
                     </div>
