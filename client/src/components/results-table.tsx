@@ -175,35 +175,37 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
+      <CardHeader className="pb-4">
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <CardTitle className="mb-2 sm:mb-0">Discovered Pages ({filteredPages.length})</CardTitle>
-            <div className="flex items-center space-x-2">
+            <CardTitle className="mb-2 sm:mb-0 text-2xl font-bold text-gray-900">
+              Discovered Pages ({filteredPages.length})
+            </CardTitle>
+            <div className="flex items-center space-x-3 bg-gray-50 px-4 py-2 rounded-xl border border-gray-200">
               <Switch
                 id="unique-only"
                 checked={showUniqueOnly}
                 onCheckedChange={handleUniqueToggle}
               />
-              <Label htmlFor="unique-only" className="text-sm font-medium whitespace-nowrap">
+              <Label htmlFor="unique-only" className="text-sm font-semibold text-gray-700 whitespace-nowrap">
                 Unique content only
               </Label>
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
               <Input
                 placeholder="Filter URLs..."
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
-                className="pl-10"
+                className="pl-10 h-11 border-2 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all duration-200"
               />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
+              <SelectTrigger className="h-11 border-2 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all duration-200">
                 <SelectValue placeholder="All Status Codes" />
               </SelectTrigger>
               <SelectContent>
@@ -215,7 +217,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
               </SelectContent>
             </Select>
             <Select value={itemsPerPage.toString()} onValueChange={handlePageSizeChange}>
-              <SelectTrigger>
+              <SelectTrigger className="h-11 border-2 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all duration-200">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

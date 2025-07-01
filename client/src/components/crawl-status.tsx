@@ -129,55 +129,56 @@ export default function CrawlStatus({ sessionId }: CrawlStatusProps) {
     : Math.min((session.totalPages / 1000) * 100, 100);
 
   return (
-    <Card className="mb-8">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
+    <Card className="mb-8 border-0 shadow-lg bg-white/70 backdrop-blur-sm">
+      <CardHeader className="pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center space-x-4">
             {getStatusIcon(session.status)}
-            <CardTitle>Crawl Status</CardTitle>
+            <CardTitle className="text-2xl font-bold text-gray-900">Crawl Status</CardTitle>
             {getStatusBadge(session.status)}
           </div>
           <div className="flex items-center space-x-4">
-            <div className="flex items-center text-sm text-muted-foreground">
-              <Clock className="mr-2 h-4 w-4" />
-              <span>{formatTime(elapsedTime)}</span>
+            <div className="flex items-center text-sm bg-gray-50 px-3 py-2 rounded-xl border border-gray-200">
+              <Clock className="mr-2 h-4 w-4 text-gray-600" />
+              <span className="font-semibold text-gray-700">{formatTime(elapsedTime)}</span>
             </div>
             {session.status === "running" && (
               <Button
                 variant="destructive"
                 size="sm"
                 onClick={handleStop}
+                className="shadow-md"
               >
-                <Square className="mr-1 h-4 w-4" />
-                Stop
+                <Square className="mr-2 h-4 w-4" />
+                Stop Crawl
               </Button>
             )}
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div>
-          <div className="flex justify-between text-sm text-muted-foreground mb-2">
-            <span>Pages Discovered</span>
+      <CardContent className="space-y-6">
+        <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-xl border border-gray-200">
+          <div className="flex justify-between text-sm font-medium text-gray-700 mb-3">
+            <span>Discovery Progress</span>
             <span>
-              {session.totalPages}{session.maxPages ? ` / ${session.maxPages}` : ""}
+              {session.totalPages}{session.maxPages ? ` / ${session.maxPages.toLocaleString()}` : ""} pages
             </span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress value={progress} className="h-3 bg-gray-200" />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-          <div className="bg-muted p-3 rounded-md">
-            <div className="text-muted-foreground">Pages Found</div>
-            <div className="text-lg font-semibold text-foreground">{session.totalPages}</div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="text-center p-4 bg-gradient-to-br from-slate-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm">
+            <div className="text-sm font-medium text-gray-600 mb-1">Pages Found</div>
+            <div className="text-2xl font-bold text-gray-700">{session.totalPages.toLocaleString()}</div>
           </div>
-          <div className="bg-green-50 p-3 rounded-md">
-            <div className="text-muted-foreground">Successful (2xx)</div>
-            <div className="text-lg font-semibold text-green-600">{session.successfulPages}</div>
+          <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-green-100 rounded-xl border border-green-200 shadow-sm">
+            <div className="text-sm font-medium text-green-600 mb-1">Successful (2xx)</div>
+            <div className="text-2xl font-bold text-green-700">{session.successfulPages.toLocaleString()}</div>
           </div>
-          <div className="bg-red-50 p-3 rounded-md">
-            <div className="text-muted-foreground">Errors (4xx/5xx)</div>
-            <div className="text-lg font-semibold text-red-600">{session.errorPages}</div>
+          <div className="text-center p-4 bg-gradient-to-br from-red-50 to-rose-100 rounded-xl border border-red-200 shadow-sm">
+            <div className="text-sm font-medium text-red-600 mb-1">Errors (4xx/5xx)</div>
+            <div className="text-2xl font-bold text-red-700">{session.errorPages.toLocaleString()}</div>
           </div>
         </div>
 

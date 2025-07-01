@@ -52,11 +52,25 @@ export default function CrawlerPage() {
         )}
       </main>
 
-      <footer className="bg-white border-t border-gray-200 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center text-sm text-muted-foreground">
-            Website Page Crawler - Professional SEO Analysis Tool |{" "}
-            <span className="text-primary">Powered by Advanced Web Crawling Technology</span>
+      <footer className="bg-white/80 backdrop-blur-sm border-t border-gray-200/60 mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="flex items-center space-x-3">
+              <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-1.5 rounded-lg">
+                <Bug className="text-white h-5 w-5" />
+              </div>
+              <span className="text-lg font-bold bg-gradient-to-r from-gray-700 to-gray-600 bg-clip-text text-transparent">
+                WebsiteMapper
+              </span>
+            </div>
+            <div className="text-center">
+              <div className="text-sm font-medium text-gray-600 mb-1">
+                Professional SEO Analysis & Web Crawling Platform
+              </div>
+              <div className="text-xs text-gray-500">
+                Advanced duplicate content detection • PDF discovery • Real-time insights
+              </div>
+            </div>
           </div>
         </div>
       </footer>

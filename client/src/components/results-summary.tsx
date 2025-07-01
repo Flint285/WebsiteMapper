@@ -100,16 +100,16 @@ export default function ResultsSummary({ sessionId }: ResultsSummaryProps) {
     : "0.0";
 
   return (
-    <Card className="mb-8">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>Crawl Results Summary</CardTitle>
-          <div className="flex space-x-2">
-            <Button onClick={handleExport} className="bg-primary hover:bg-primary/90">
+    <Card className="mb-8 border-0 shadow-lg bg-white/70 backdrop-blur-sm">
+      <CardHeader className="pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <CardTitle className="text-2xl font-bold text-gray-900">Crawl Results Summary</CardTitle>
+          <div className="flex space-x-3">
+            <Button onClick={handleExport} className="bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 shadow-md">
               <Download className="mr-2 h-4 w-4" />
               Export CSV
             </Button>
-            <Button variant="outline" onClick={handleShare}>
+            <Button variant="outline" onClick={handleShare} className="border-2 border-gray-300 hover:border-gray-400 shadow-md">
               <Share className="mr-2 h-4 w-4" />
               Share Report
             </Button>
@@ -117,43 +117,43 @@ export default function ResultsSummary({ sessionId }: ResultsSummaryProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          <div className="text-center p-4 bg-muted rounded-lg">
-            <div className="text-3xl font-bold text-primary mb-2">{stats.totalFound.toLocaleString()}</div>
-            <div className="text-sm text-muted-foreground">Total URLs Found</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="text-center p-6 bg-gradient-to-br from-slate-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm">
+            <div className="text-3xl font-bold text-gray-700 mb-2">{stats.totalFound.toLocaleString()}</div>
+            <div className="text-sm font-medium text-gray-600">Total URLs Found</div>
           </div>
-          <div className="text-center p-4 bg-blue-50 rounded-lg">
-            <div className="text-3xl font-bold text-blue-600 mb-2">{stats.uniquePages?.toLocaleString() || 0}</div>
-            <div className="text-sm text-muted-foreground">Unique Pages</div>
+          <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl border border-blue-200 shadow-sm">
+            <div className="text-3xl font-bold text-blue-700 mb-2">{stats.uniquePages?.toLocaleString() || 0}</div>
+            <div className="text-sm font-medium text-blue-600">Unique Pages</div>
           </div>
-          <div className="text-center p-4 bg-green-50 rounded-lg">
-            <div className="text-3xl font-bold text-green-600 mb-2">{stats.successful.toLocaleString()}</div>
-            <div className="text-sm text-muted-foreground">Successful Pages</div>
+          <div className="text-center p-6 bg-gradient-to-br from-emerald-50 to-green-100 rounded-xl border border-green-200 shadow-sm">
+            <div className="text-3xl font-bold text-green-700 mb-2">{stats.successful.toLocaleString()}</div>
+            <div className="text-sm font-medium text-green-600">Successful Pages</div>
           </div>
-          <div className="text-center p-4 bg-amber-50 rounded-lg">
-            <div className="text-3xl font-bold text-amber-600 mb-2">{stats.duplicateUrls?.toLocaleString() || 0}</div>
-            <div className="text-sm text-muted-foreground">Duplicate URLs</div>
+          <div className="text-center p-6 bg-gradient-to-br from-amber-50 to-yellow-100 rounded-xl border border-amber-200 shadow-sm">
+            <div className="text-3xl font-bold text-amber-700 mb-2">{stats.duplicateUrls?.toLocaleString() || 0}</div>
+            <div className="text-sm font-medium text-amber-600">Duplicate URLs</div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          <div className="text-center p-4 bg-red-50 rounded-lg">
-            <div className="text-3xl font-bold text-red-600 mb-2">{stats.errors.toLocaleString()}</div>
-            <div className="text-sm text-muted-foreground">Error Pages</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="text-center p-6 bg-gradient-to-br from-red-50 to-rose-100 rounded-xl border border-red-200 shadow-sm">
+            <div className="text-3xl font-bold text-red-700 mb-2">{stats.errors.toLocaleString()}</div>
+            <div className="text-sm font-medium text-red-600">Error Pages</div>
           </div>
-          <div className="text-center p-4 bg-purple-50 rounded-lg">
-            <div className="text-3xl font-bold text-purple-600 mb-2">{stats.pdfLinks?.toLocaleString() || 0}</div>
-            <div className="text-sm text-muted-foreground">PDF Links Found</div>
+          <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-violet-100 rounded-xl border border-purple-200 shadow-sm">
+            <div className="text-3xl font-bold text-purple-700 mb-2">{stats.pdfLinks?.toLocaleString() || 0}</div>
+            <div className="text-sm font-medium text-purple-600">PDF Links Found</div>
           </div>
-          <div className="text-center p-4 bg-orange-50 rounded-lg">
-            <div className="text-3xl font-bold text-orange-600 mb-2">{avgLoadTime}s</div>
-            <div className="text-sm text-muted-foreground">Avg Load Time</div>
+          <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-amber-100 rounded-xl border border-orange-200 shadow-sm">
+            <div className="text-3xl font-bold text-orange-700 mb-2">{avgLoadTime}s</div>
+            <div className="text-sm font-medium text-orange-600">Avg Load Time</div>
           </div>
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <div className="text-3xl font-bold text-gray-600 mb-2">
+          <div className="text-center p-6 bg-gradient-to-br from-teal-50 to-cyan-100 rounded-xl border border-teal-200 shadow-sm">
+            <div className="text-3xl font-bold text-teal-700 mb-2">
               {stats.uniquePages && stats.totalFound ? ((stats.uniquePages / stats.totalFound) * 100).toFixed(1) : 0}%
             </div>
-            <div className="text-sm text-muted-foreground">Content Uniqueness</div>
+            <div className="text-sm font-medium text-teal-600">Content Uniqueness</div>
           </div>
         </div>
 

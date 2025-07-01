@@ -112,6 +112,17 @@ WebsiteMapper is a professional SEO analysis tool that provides web crawling cap
 - Maintains SEO-relevant URL variations for analysis
 
 ## Changelog
+- June 30, 2025: Comprehensive UX/UI redesign completed:
+  - Implemented modern gradient background with glass-morphism effects
+  - Enhanced header with gradient logo and improved typography
+  - Redesigned form with better visual hierarchy and modern input styling
+  - Added comprehensive error states with icons and colored backgrounds
+  - Updated all cards with backdrop blur and shadow effects for depth
+  - Improved statistics cards with gradient backgrounds and better spacing
+  - Enhanced buttons with gradient styling and improved hover states
+  - Redesigned table filters with modern rounded inputs and better focus states
+  - Updated footer with brand consistency and feature highlights
+  - Applied consistent color scheme throughout the application
 - June 30, 2025: Bug hunt completed - critical fixes implemented:
   - Fixed performance issue with O(n) queue duplicate checking using Set-based lookup
   - Enhanced content hash generation for binary data and malformed HTML
