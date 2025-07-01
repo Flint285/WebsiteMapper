@@ -52,14 +52,21 @@ export default function ResultsSummary({ sessionId }: ResultsSummaryProps) {
     }
   };
 
-  const handleShare = () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url).then(() => {
+  const handleShare = async () => {
+    try {
+      const url = window.location.href;
+      await navigator.clipboard.writeText(url);
       toast({
         title: "Link Copied",
         description: "Report URL has been copied to clipboard.",
       });
-    });
+    } catch (error) {
+      toast({
+        title: "Copy Failed",
+        description: "Unable to copy URL to clipboard.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (isLoading || !session || !stats) {

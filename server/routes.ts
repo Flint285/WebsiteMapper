@@ -226,11 +226,22 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
             $('script, style, noscript').remove();
             // Get normalized text content
             const normalizedContent = $('body').text().replace(/\s+/g, ' ').trim();
-            contentHash = createHash('sha256').update(normalizedContent, 'utf8').digest('hex');
+            if (normalizedContent) {
+              contentHash = createHash('sha256').update(normalizedContent, 'utf8').digest('hex');
+            }
           } else {
-            // For non-HTML content, hash the entire response
-            const content = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
-            contentHash = createHash('sha256').update(content, 'utf8').digest('hex');
+            // For non-HTML content, hash the entire response safely
+            let content = '';
+            if (typeof response.data === 'string') {
+              content = response.data;
+            } else if (Buffer.isBuffer(response.data)) {
+              content = response.data.toString('base64');
+            } else {
+              content = JSON.stringify(response.data);
+            }
+            if (content) {
+              contentHash = createHash('sha256').update(content, 'utf8').digest('hex');
+            }
           }
         } catch (error) {
           console.warn(`Failed to generate content hash for ${current.url}:`, error);
@@ -243,7 +254,7 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
         url: current.url,
         statusCode: response.status,
         contentType: response.headers['content-type']?.split(';')[0] || '',
-        size: response.data?.length || 0,
+        size: response.data ? (typeof response.data === 'string' ? response.data.length : Buffer.byteLength(JSON.stringify(response.data))) : 0,
         loadTime,
         depth: current.depth,
         contentHash,
@@ -367,9 +378,14 @@ function extractLinksAndPdfs(html: string, baseUrl: string): { links: string[], 
   
   $('a[href]').each((_, element) => {
     const href = $(element).attr('href');
-    if (href) {
+    if (href && href.trim()) {
       try {
-        const url = new URL(href, baseUrl);
+        // Skip javascript:, mailto:, tel:, and other non-http protocols
+        if (href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('ftp:')) {
+          return;
+        }
+        
+        const url = new URL(href.trim(), baseUrl);
         
         // Only include links from the exact same hostname (with www normalization)
         const baseHost = base.hostname.replace(/^www\./, '');

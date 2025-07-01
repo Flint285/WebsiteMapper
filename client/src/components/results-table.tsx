@@ -83,13 +83,20 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
     setCurrentPage(1);
   };
 
-  const handleCopyUrl = (url: string) => {
-    navigator.clipboard.writeText(url).then(() => {
+  const handleCopyUrl = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
       toast({
         title: "URL Copied",
         description: "URL has been copied to clipboard.",
       });
-    });
+    } catch (error) {
+      toast({
+        title: "Copy Failed",
+        description: "Unable to copy URL to clipboard.",
+        variant: "destructive",
+      });
+    }
   };
 
   const getContentTypeIcon = (contentType: string) => {
