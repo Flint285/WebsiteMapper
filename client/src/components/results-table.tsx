@@ -208,7 +208,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
                   Unique content only
                 </Label>
               </div>
-              {session?.searchText && (
+              {session?.searchText && session.searchText.trim() && (
                 <div className="flex items-center space-x-3 bg-yellow-50 px-4 py-2 rounded-xl border border-yellow-200">
                   <Switch
                     id="text-matches-only"
@@ -220,7 +220,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
                   </Label>
                 </div>
               )}
-              {session?.searchUrl && (
+              {session?.searchUrl && session.searchUrl.trim() && (
                 <div className="flex items-center space-x-3 bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-200">
                   <Switch
                     id="url-matches-only"

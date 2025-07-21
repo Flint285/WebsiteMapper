@@ -285,6 +285,27 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
         }
       }
 
+      // Extract links and search for URL patterns BEFORE creating page record
+      let links: string[] = [];
+      let pdfLinks: string[] = [];
+      
+      if (response.status >= 200 && response.status < 300 && current.depth < maxDepth && response.headers['content-type']?.includes('text/html')) {
+        const extracted = extractLinksAndPdfs(response.data, startUrl);
+        links = extracted.links;
+        pdfLinks = extracted.pdfLinks;
+        
+        // Search for URL pattern in extracted links if searchUrl provided
+        if (searchUrl && searchUrl.trim()) {
+          const searchPattern = searchUrl.trim().toLowerCase();
+          const allUrls = [...links, ...pdfLinks];
+          const matchingUrls = allUrls.filter(url => url.toLowerCase().includes(searchPattern));
+          if (matchingUrls.length > 0) {
+            containsSearchUrl = true;
+            urlMatches = matchingUrls.length;
+          }
+        }
+      }
+
       const page = await storage.createCrawledPage({
         sessionId,
         url: current.url,
@@ -314,20 +335,8 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
           urlMatchingPages++;
         }
         
-        // Extract links if it's HTML and we haven't reached max depth
-        if (current.depth < maxDepth && response.headers['content-type']?.includes('text/html')) {
-          const { links, pdfLinks } = extractLinksAndPdfs(response.data, startUrl);
-          
-          // Search for URL pattern in extracted links if searchUrl provided
-          if (searchUrl && searchUrl.trim()) {
-            const searchPattern = searchUrl.trim().toLowerCase();
-            const allUrls = [...links, ...pdfLinks];
-            const matchingUrls = allUrls.filter(url => url.toLowerCase().includes(searchPattern));
-            if (matchingUrls.length > 0) {
-              containsSearchUrl = true;
-              urlMatches = matchingUrls.length;
-            }
-          }
+        // Process extracted links if we have any
+        if (links.length > 0 || pdfLinks.length > 0) {
           
           // Track PDF links
           for (const pdfLink of pdfLinks) {
