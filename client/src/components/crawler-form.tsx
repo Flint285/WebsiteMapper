@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Globe, Play, Loader2, Info, AlertCircle } from "lucide-react";
+import { Globe, Play, Loader2, Info, AlertCircle, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,6 +16,7 @@ const crawlFormSchema = z.object({
   url: z.string().min(1, "URL is required").url("Please enter a valid URL (e.g., https://example.com)"),
   maxPages: z.number().min(1, "Must be at least 1 page").max(10000, "Maximum 10,000 pages allowed"),
   maxDepth: z.number().min(1, "Must be at least 1 level deep").max(20, "Maximum 20 levels allowed"),
+  searchText: z.string().optional(),
 });
 
 type CrawlFormData = z.infer<typeof crawlFormSchema>;
@@ -33,6 +35,7 @@ export default function CrawlerForm({ onSessionStart }: CrawlerFormProps) {
       url: "",
       maxPages: 1000,
       maxDepth: 5,
+      searchText: "",
     },
   });
 
@@ -90,6 +93,29 @@ export default function CrawlerForm({ onSessionStart }: CrawlerFormProps) {
                   <AlertCircle className="h-4 w-4 flex-shrink-0" />
                   <p className="text-sm font-medium">
                     {form.formState.errors.url.message}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <Label htmlFor="searchText" className="text-base font-semibold text-gray-700">Search Text (Optional)</Label>
+              <p className="text-sm text-gray-500">Find all pages containing specific text. Leave empty to crawl all pages.</p>
+              <div className="relative">
+                <Textarea
+                  id="searchText"
+                  placeholder="Enter text to search for on pages..."
+                  rows={3}
+                  className="pl-12 text-base border-2 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all duration-200 resize-none"
+                  {...form.register("searchText")}
+                />
+                <Search className="absolute left-4 top-4 text-gray-400 h-5 w-5" />
+              </div>
+              {form.formState.errors.searchText && (
+                <div className="flex items-center space-x-2 text-red-600 bg-red-50 px-3 py-2 rounded-lg border border-red-200">
+                  <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                  <p className="text-sm font-medium">
+                    {form.formState.errors.searchText.message}
                   </p>
                 </div>
               )}

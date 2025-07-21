@@ -136,7 +136,7 @@ export default function ResultsSummary({ sessionId }: ResultsSummaryProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
           <div className="text-center p-6 bg-gradient-to-br from-red-50 to-rose-100 rounded-xl border border-red-200 shadow-sm">
             <div className="text-3xl font-bold text-red-700 mb-2">{stats.errors.toLocaleString()}</div>
             <div className="text-sm font-medium text-red-600">Error Pages</div>
@@ -145,6 +145,12 @@ export default function ResultsSummary({ sessionId }: ResultsSummaryProps) {
             <div className="text-3xl font-bold text-purple-700 mb-2">{stats.pdfLinks?.toLocaleString() || 0}</div>
             <div className="text-sm font-medium text-purple-600">PDF Links Found</div>
           </div>
+          {session.searchText && (
+            <div className="text-center p-6 bg-gradient-to-br from-yellow-50 to-amber-100 rounded-xl border border-yellow-200 shadow-sm">
+              <div className="text-3xl font-bold text-amber-700 mb-2">{stats.matchingPages?.toLocaleString() || 0}</div>
+              <div className="text-sm font-medium text-amber-600">Text Matches</div>
+            </div>
+          )}
           <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-amber-100 rounded-xl border border-orange-200 shadow-sm">
             <div className="text-3xl font-bold text-orange-700 mb-2">{avgLoadTime}s</div>
             <div className="text-sm font-medium text-orange-600">Avg Load Time</div>

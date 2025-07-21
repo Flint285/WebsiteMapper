@@ -11,18 +11,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Start a new crawl session
   app.post("/api/crawl/start", async (req, res) => {
     try {
-      const { url, maxPages, maxDepth } = startCrawlSchema.parse(req.body);
+      const { url, maxPages, maxDepth, searchText } = startCrawlSchema.parse(req.body);
       
       const session = await storage.createCrawlSession({
         url,
         maxPages,
         maxDepth,
+        searchText: searchText || null,
       });
 
       res.json({ sessionId: session.id });
 
       // Start crawling in background
-      startCrawling(session.id, url, maxPages, maxDepth);
+      startCrawling(session.id, url, maxPages, maxDepth, searchText);
     } catch (error) {
       res.status(400).json({ error: "Invalid request data" });
     }
@@ -72,6 +73,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     // Get PDF link count
     const pdfLinks = await storage.getPdfLinkCount(sessionId);
+    
+    // Get text search match count
+    const matchingPages = await storage.getSearchMatchCount(sessionId);
 
     const response: CrawlProgressResponse = {
       session: sessionWithCurrentUrl,
@@ -83,6 +87,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         uniquePages,
         duplicateUrls,
         pdfLinks,
+        matchingPages,
         statusCodes,
         pageTypes,
       },
@@ -125,9 +130,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     const csvSections = [
       "CRAWLED PAGES",
-      "URL,Status Code,Content Type,Size (bytes),Load Time (ms),Depth,Content Hash",
+      "URL,Status Code,Content Type,Size (bytes),Load Time (ms),Depth,Content Hash,Contains Search Text,Text Matches",
       ...pages.map(page => 
-        `"${page.url.replace(/"/g, '""')}",${page.statusCode || ''},"${(page.contentType || '').replace(/"/g, '""')}",${page.size || ''},${page.loadTime || ''},${page.depth},"${page.contentHash || ''}"`
+        `"${page.url.replace(/"/g, '""')}",${page.statusCode || ''},"${(page.contentType || '').replace(/"/g, '""')}",${page.size || ''},${page.loadTime || ''},${page.depth},"${page.contentHash || ''}",${page.containsSearchText || false},${page.textMatches || 0}`
       ),
       "",
       "PDF LINKS DISCOVERED",
@@ -150,7 +155,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 const activeCrawls = new Map<number, { shouldStop: boolean; currentUrl: string }>();
 
 // Crawling logic
-async function startCrawling(sessionId: number, startUrl: string, maxPages: number, maxDepth: number) {
+async function startCrawling(sessionId: number, startUrl: string, maxPages: number, maxDepth: number, searchText?: string) {
   const session = await storage.updateCrawlSession(sessionId, { 
     status: 'running',
     startedAt: new Date()
@@ -167,6 +172,7 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
   let totalPages = 0;
   let successfulPages = 0;
   let errorPages = 0;
+  let matchingPages = 0;
 
   // Add initial URL
   queue.push({ url: startUrl, depth: 0 });
@@ -215,8 +221,11 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
       });
       const loadTime = Date.now() - startTime;
 
-      // Generate content hash for duplicate detection
+      // Generate content hash for duplicate detection and search for text
       let contentHash = null;
+      let containsSearchText = false;
+      let textMatches = 0;
+      
       if (response.data && response.status >= 200 && response.status < 300) {
         try {
           // For HTML content, extract meaningful content without scripts/styles
@@ -228,12 +237,34 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
             const normalizedContent = $('body').text().replace(/\s+/g, ' ').trim();
             if (normalizedContent) {
               contentHash = createHash('sha256').update(normalizedContent, 'utf8').digest('hex');
+              
+              // Search for text if search term provided
+              if (searchText && searchText.trim()) {
+                const searchTerm = searchText.trim().toLowerCase();
+                const contentLower = normalizedContent.toLowerCase();
+                containsSearchText = contentLower.includes(searchTerm);
+                if (containsSearchText) {
+                  // Count occurrences of search text
+                  const matches = contentLower.split(searchTerm);
+                  textMatches = matches.length - 1;
+                }
+              }
             }
           } else {
             // For non-HTML content, hash the entire response safely
             let content = '';
             if (typeof response.data === 'string') {
               content = response.data;
+              // Also search in non-HTML text content
+              if (searchText && searchText.trim()) {
+                const searchTerm = searchText.trim().toLowerCase();
+                const contentLower = content.toLowerCase();
+                containsSearchText = contentLower.includes(searchTerm);
+                if (containsSearchText) {
+                  const matches = contentLower.split(searchTerm);
+                  textMatches = matches.length - 1;
+                }
+              }
             } else if (Buffer.isBuffer(response.data)) {
               content = response.data.toString('base64');
             } else {
@@ -258,11 +289,18 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
         loadTime,
         depth: current.depth,
         contentHash,
+        containsSearchText,
+        textMatches,
       });
 
       totalPages++;
       if (response.status >= 200 && response.status < 300) {
         successfulPages++;
+        
+        // Track search text matches
+        if (containsSearchText) {
+          matchingPages++;
+        }
         
         // Extract links if it's HTML and we haven't reached max depth
         if (current.depth < maxDepth && response.headers['content-type']?.includes('text/html')) {
@@ -290,6 +328,7 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
         totalPages,
         successfulPages,
         errorPages,
+        matchingPages,
       });
 
       // Broadcast progress via WebSocket
@@ -311,12 +350,15 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
         loadTime: 0,
         depth: current.depth,
         contentHash: null,
+        containsSearchText: false,
+        textMatches: 0,
       });
 
       await storage.updateCrawlSession(sessionId, {
         totalPages,
         successfulPages,
         errorPages,
+        matchingPages,
       });
     }
   }
@@ -331,6 +373,7 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
       totalPages,
       successfulPages,
       errorPages,
+      matchingPages,
     });
   } catch (error) {
     console.error(`Failed to update session ${sessionId}:`, error);

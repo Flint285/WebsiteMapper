@@ -23,6 +23,10 @@ export interface IStorage {
   addPdfLink(sessionId: number, url: string): Promise<void>;
   getPdfLinkCount(sessionId: number): Promise<number>;
   getPdfLinks(sessionId: number): Promise<string[]>;
+  
+  // Text search functionality
+  getPagesBySearchMatch(sessionId: number, hasSearchText?: boolean): Promise<CrawledPage[]>;
+  getSearchMatchCount(sessionId: number): Promise<number>;
 }
 
 export class MemStorage implements IStorage {
@@ -49,10 +53,12 @@ export class MemStorage implements IStorage {
       totalPages: 0,
       successfulPages: 0,
       errorPages: 0,
+      matchingPages: 0,
       startedAt: new Date(),
       completedAt: null,
       error: null,
       maxPages: insertSession.maxPages || null,
+      searchText: insertSession.searchText || null,
       currentUrl: null,
     };
     this.crawlSessions.set(id, session);
@@ -84,6 +90,8 @@ export class MemStorage implements IStorage {
       loadTime: insertPage.loadTime || null,
       depth: insertPage.depth,
       contentHash: insertPage.contentHash ?? null,
+      containsSearchText: insertPage.containsSearchText ?? false,
+      textMatches: insertPage.textMatches ?? 0,
       discoveredAt: new Date(),
     };
     this.crawledPages.set(id, page);
@@ -145,6 +153,19 @@ export class MemStorage implements IStorage {
   async getPdfLinks(sessionId: number): Promise<string[]> {
     const pdfSet = this.pdfLinks.get(sessionId);
     return pdfSet ? Array.from(pdfSet) : [];
+  }
+
+  async getPagesBySearchMatch(sessionId: number, hasSearchText?: boolean): Promise<CrawledPage[]> {
+    return Array.from(this.crawledPages.values()).filter(
+      (page) => page.sessionId === sessionId && 
+      (hasSearchText === undefined || page.containsSearchText === hasSearchText)
+    );
+  }
+
+  async getSearchMatchCount(sessionId: number): Promise<number> {
+    return Array.from(this.crawledPages.values()).filter(
+      (page) => page.sessionId === sessionId && page.containsSearchText
+    ).length;
   }
 }
 

@@ -11,6 +11,8 @@ export const crawlSessions = pgTable("crawl_sessions", {
   totalPages: integer("total_pages").default(0),
   successfulPages: integer("successful_pages").default(0),
   errorPages: integer("error_pages").default(0),
+  searchText: text("search_text"), // Text to search for on pages
+  matchingPages: integer("matching_pages").default(0), // Number of pages containing the search text
   startedAt: timestamp("started_at").defaultNow(),
   completedAt: timestamp("completed_at"),
   error: text("error"),
@@ -27,6 +29,8 @@ export const crawledPages = pgTable("crawled_pages", {
   loadTime: integer("load_time"), // in milliseconds
   depth: integer("depth").notNull(),
   contentHash: text("content_hash"), // SHA-256 hash of page content for duplicate detection
+  containsSearchText: boolean("contains_search_text").default(false), // Whether this page contains the search text
+  textMatches: integer("text_matches").default(0), // Number of times the search text appears on this page
   discoveredAt: timestamp("discovered_at").defaultNow(),
 });
 
@@ -34,6 +38,7 @@ export const insertCrawlSessionSchema = createInsertSchema(crawlSessions).pick({
   url: true,
   maxPages: true,
   maxDepth: true,
+  searchText: true,
 });
 
 export const insertCrawledPageSchema = createInsertSchema(crawledPages).pick({
@@ -45,6 +50,8 @@ export const insertCrawledPageSchema = createInsertSchema(crawledPages).pick({
   loadTime: true,
   depth: true,
   contentHash: true,
+  containsSearchText: true,
+  textMatches: true,
 });
 
 export type InsertCrawlSession = z.infer<typeof insertCrawlSessionSchema>;
@@ -57,6 +64,7 @@ export const startCrawlSchema = z.object({
   url: z.string().url(),
   maxPages: z.number().min(1).max(10000),
   maxDepth: z.number().min(1).max(20),
+  searchText: z.string().optional(),
 });
 
 export type StartCrawlRequest = z.infer<typeof startCrawlSchema>;
@@ -71,6 +79,7 @@ export type CrawlProgressResponse = {
     uniquePages: number;
     duplicateUrls: number;
     pdfLinks: number;
+    matchingPages: number; // Pages containing search text
     statusCodes: Record<string, number>;
     pageTypes: Record<string, number>;
   };

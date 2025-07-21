@@ -19,6 +19,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
   const [searchFilter, setSearchFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [showUniqueOnly, setShowUniqueOnly] = useState(false);
+  const [showTextMatchesOnly, setShowTextMatchesOnly] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const { toast } = useToast();
@@ -32,12 +33,14 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
   });
 
   const pages = (data as any)?.pages || [];
+  const session = (data as any)?.session;
 
   // Filter and paginate pages
   let filteredPages = pages.filter((page: any) => {
     const matchesSearch = !searchFilter || page.url.toLowerCase().includes(searchFilter.toLowerCase());
     const matchesStatus = !statusFilter || statusFilter === "all" || page.statusCode?.toString() === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesTextSearch = !showTextMatchesOnly || (page.containsSearchText === true);
+    return matchesSearch && matchesStatus && matchesTextSearch;
   });
 
   // Create a map of content hashes to count duplicates
@@ -77,9 +80,14 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
     setCurrentPage(1);
   };
 
-  // Reset to first page when toggling unique content filter
+  // Reset to first page when toggling filters
   const handleUniqueToggle = (checked: boolean) => {
     setShowUniqueOnly(checked);
+    setCurrentPage(1);
+  };
+
+  const handleTextMatchToggle = (checked: boolean) => {
+    setShowTextMatchesOnly(checked);
     setCurrentPage(1);
   };
 
@@ -182,15 +190,29 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
             <CardTitle className="mb-2 sm:mb-0 text-2xl font-bold text-gray-900">
               Discovered Pages ({filteredPages.length})
             </CardTitle>
-            <div className="flex items-center space-x-3 bg-gray-50 px-4 py-2 rounded-xl border border-gray-200">
-              <Switch
-                id="unique-only"
-                checked={showUniqueOnly}
-                onCheckedChange={handleUniqueToggle}
-              />
-              <Label htmlFor="unique-only" className="text-sm font-semibold text-gray-700 whitespace-nowrap">
-                Unique content only
-              </Label>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex items-center space-x-3 bg-gray-50 px-4 py-2 rounded-xl border border-gray-200">
+                <Switch
+                  id="unique-only"
+                  checked={showUniqueOnly}
+                  onCheckedChange={handleUniqueToggle}
+                />
+                <Label htmlFor="unique-only" className="text-sm font-semibold text-gray-700 whitespace-nowrap">
+                  Unique content only
+                </Label>
+              </div>
+              {session?.searchText && (
+                <div className="flex items-center space-x-3 bg-yellow-50 px-4 py-2 rounded-xl border border-yellow-200">
+                  <Switch
+                    id="text-matches-only"
+                    checked={showTextMatchesOnly}
+                    onCheckedChange={handleTextMatchToggle}
+                  />
+                  <Label htmlFor="text-matches-only" className="text-sm font-semibold text-yellow-700 whitespace-nowrap">
+                    Text matches only
+                  </Label>
+                </div>
+              )}
             </div>
           </div>
           
@@ -248,6 +270,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
                 setSearchFilter("");
                 setStatusFilter("");
                 setShowUniqueOnly(false);
+                setShowTextMatchesOnly(false);
               }}
             >
               Clear all filters
@@ -263,6 +286,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
                   <TableHead className="w-20">Type</TableHead>
                   <TableHead className="w-20">Size</TableHead>
                   <TableHead className="w-24">Load Time</TableHead>
+                  {session?.searchText && <TableHead className="w-20">Text Matches</TableHead>}
                   <TableHead className="w-20">Content</TableHead>
                   <TableHead className="w-24">Actions</TableHead>
                 </TableRow>
@@ -292,6 +316,17 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
                   <TableCell className="text-sm text-muted-foreground">
                     {formatLoadTime(page.loadTime)}
                   </TableCell>
+                  {session?.searchText && (
+                    <TableCell>
+                      {page.containsSearchText ? (
+                        <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100 text-xs">
+                          {page.textMatches || 1} match{(page.textMatches || 1) > 1 ? 'es' : ''}
+                        </Badge>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">-</span>
+                      )}
+                    </TableCell>
+                  )}
                   <TableCell>
                     {page.contentHash && hashCounts.get(page.contentHash) > 1 ? (
                       <Badge variant="secondary" className="text-xs">
