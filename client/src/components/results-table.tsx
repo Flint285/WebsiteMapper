@@ -20,6 +20,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
   const [statusFilter, setStatusFilter] = useState("");
   const [showUniqueOnly, setShowUniqueOnly] = useState(false);
   const [showTextMatchesOnly, setShowTextMatchesOnly] = useState(false);
+  const [showUrlMatchesOnly, setShowUrlMatchesOnly] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const { toast } = useToast();
@@ -40,7 +41,8 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
     const matchesSearch = !searchFilter || page.url.toLowerCase().includes(searchFilter.toLowerCase());
     const matchesStatus = !statusFilter || statusFilter === "all" || page.statusCode?.toString() === statusFilter;
     const matchesTextSearch = !showTextMatchesOnly || (page.containsSearchText === true);
-    return matchesSearch && matchesStatus && matchesTextSearch;
+    const matchesUrlSearch = !showUrlMatchesOnly || (page.containsSearchUrl === true);
+    return matchesSearch && matchesStatus && matchesTextSearch && matchesUrlSearch;
   });
 
   // Create a map of content hashes to count duplicates
@@ -88,6 +90,11 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
 
   const handleTextMatchToggle = (checked: boolean) => {
     setShowTextMatchesOnly(checked);
+    setCurrentPage(1);
+  };
+
+  const handleUrlMatchToggle = (checked: boolean) => {
+    setShowUrlMatchesOnly(checked);
     setCurrentPage(1);
   };
 
@@ -213,6 +220,18 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
                   </Label>
                 </div>
               )}
+              {session?.searchUrl && (
+                <div className="flex items-center space-x-3 bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-200">
+                  <Switch
+                    id="url-matches-only"
+                    checked={showUrlMatchesOnly}
+                    onCheckedChange={handleUrlMatchToggle}
+                  />
+                  <Label htmlFor="url-matches-only" className="text-sm font-semibold text-indigo-700 whitespace-nowrap">
+                    URL matches only
+                  </Label>
+                </div>
+              )}
             </div>
           </div>
           
@@ -271,6 +290,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
                 setStatusFilter("");
                 setShowUniqueOnly(false);
                 setShowTextMatchesOnly(false);
+                setShowUrlMatchesOnly(false);
               }}
             >
               Clear all filters
@@ -287,6 +307,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
                   <TableHead className="w-20">Size</TableHead>
                   <TableHead className="w-24">Load Time</TableHead>
                   {session?.searchText && <TableHead className="w-20">Text Matches</TableHead>}
+                  {session?.searchUrl && <TableHead className="w-20">URL Matches</TableHead>}
                   <TableHead className="w-20">Content</TableHead>
                   <TableHead className="w-24">Actions</TableHead>
                 </TableRow>
@@ -321,6 +342,17 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
                       {page.containsSearchText ? (
                         <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100 text-xs">
                           {page.textMatches || 1} match{(page.textMatches || 1) > 1 ? 'es' : ''}
+                        </Badge>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">-</span>
+                      )}
+                    </TableCell>
+                  )}
+                  {session?.searchUrl && (
+                    <TableCell>
+                      {page.containsSearchUrl ? (
+                        <Badge className="bg-indigo-100 text-indigo-800 hover:bg-indigo-100 text-xs">
+                          {page.urlMatches || 1} match{(page.urlMatches || 1) > 1 ? 'es' : ''}
                         </Badge>
                       ) : (
                         <span className="text-xs text-muted-foreground">-</span>

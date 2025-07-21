@@ -151,6 +151,12 @@ export default function ResultsSummary({ sessionId }: ResultsSummaryProps) {
               <div className="text-sm font-medium text-amber-600">Text Matches</div>
             </div>
           )}
+          {session.searchUrl && (
+            <div className="text-center p-6 bg-gradient-to-br from-indigo-50 to-blue-100 rounded-xl border border-indigo-200 shadow-sm">
+              <div className="text-3xl font-bold text-indigo-700 mb-2">{stats.urlMatchingPages?.toLocaleString() || 0}</div>
+              <div className="text-sm font-medium text-indigo-600">URL Matches</div>
+            </div>
+          )}
           <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-amber-100 rounded-xl border border-orange-200 shadow-sm">
             <div className="text-3xl font-bold text-orange-700 mb-2">{avgLoadTime}s</div>
             <div className="text-sm font-medium text-orange-600">Avg Load Time</div>

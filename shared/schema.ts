@@ -12,7 +12,9 @@ export const crawlSessions = pgTable("crawl_sessions", {
   successfulPages: integer("successful_pages").default(0),
   errorPages: integer("error_pages").default(0),
   searchText: text("search_text"), // Text to search for on pages
+  searchUrl: text("search_url"), // URL pattern to search for in links
   matchingPages: integer("matching_pages").default(0), // Number of pages containing the search text
+  urlMatchingPages: integer("url_matching_pages").default(0), // Number of pages containing the search URL
   startedAt: timestamp("started_at").defaultNow(),
   completedAt: timestamp("completed_at"),
   error: text("error"),
@@ -31,6 +33,8 @@ export const crawledPages = pgTable("crawled_pages", {
   contentHash: text("content_hash"), // SHA-256 hash of page content for duplicate detection
   containsSearchText: boolean("contains_search_text").default(false), // Whether this page contains the search text
   textMatches: integer("text_matches").default(0), // Number of times the search text appears on this page
+  containsSearchUrl: boolean("contains_search_url").default(false), // Whether this page contains links with the search URL
+  urlMatches: integer("url_matches").default(0), // Number of links containing the search URL pattern
   discoveredAt: timestamp("discovered_at").defaultNow(),
 });
 
@@ -39,6 +43,7 @@ export const insertCrawlSessionSchema = createInsertSchema(crawlSessions).pick({
   maxPages: true,
   maxDepth: true,
   searchText: true,
+  searchUrl: true,
 });
 
 export const insertCrawledPageSchema = createInsertSchema(crawledPages).pick({
@@ -52,6 +57,8 @@ export const insertCrawledPageSchema = createInsertSchema(crawledPages).pick({
   contentHash: true,
   containsSearchText: true,
   textMatches: true,
+  containsSearchUrl: true,
+  urlMatches: true,
 });
 
 export type InsertCrawlSession = z.infer<typeof insertCrawlSessionSchema>;
@@ -65,6 +72,7 @@ export const startCrawlSchema = z.object({
   maxPages: z.number().min(1).max(10000),
   maxDepth: z.number().min(1).max(20),
   searchText: z.string().optional(),
+  searchUrl: z.string().optional(),
 });
 
 export type StartCrawlRequest = z.infer<typeof startCrawlSchema>;
@@ -80,6 +88,7 @@ export type CrawlProgressResponse = {
     duplicateUrls: number;
     pdfLinks: number;
     matchingPages: number; // Pages containing search text
+    urlMatchingPages: number; // Pages containing search URL
     statusCodes: Record<string, number>;
     pageTypes: Record<string, number>;
   };

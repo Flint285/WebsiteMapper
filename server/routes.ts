@@ -11,19 +11,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Start a new crawl session
   app.post("/api/crawl/start", async (req, res) => {
     try {
-      const { url, maxPages, maxDepth, searchText } = startCrawlSchema.parse(req.body);
+      const { url, maxPages, maxDepth, searchText, searchUrl } = startCrawlSchema.parse(req.body);
       
       const session = await storage.createCrawlSession({
         url,
         maxPages,
         maxDepth,
         searchText: searchText || null,
+        searchUrl: searchUrl || null,
       });
 
       res.json({ sessionId: session.id });
 
       // Start crawling in background
-      startCrawling(session.id, url, maxPages, maxDepth, searchText);
+      startCrawling(session.id, url, maxPages, maxDepth, searchText, searchUrl);
     } catch (error) {
       res.status(400).json({ error: "Invalid request data" });
     }
@@ -88,6 +89,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         duplicateUrls,
         pdfLinks,
         matchingPages,
+        urlMatchingPages: session.urlMatchingPages || 0,
         statusCodes,
         pageTypes,
       },
@@ -130,9 +132,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     const csvSections = [
       "CRAWLED PAGES",
-      "URL,Status Code,Content Type,Size (bytes),Load Time (ms),Depth,Content Hash,Contains Search Text,Text Matches",
+      "URL,Status Code,Content Type,Size (bytes),Load Time (ms),Depth,Content Hash,Contains Search Text,Text Matches,Contains Search URL,URL Matches",
       ...pages.map(page => 
-        `"${page.url.replace(/"/g, '""')}",${page.statusCode || ''},"${(page.contentType || '').replace(/"/g, '""')}",${page.size || ''},${page.loadTime || ''},${page.depth},"${page.contentHash || ''}",${page.containsSearchText || false},${page.textMatches || 0}`
+        `"${page.url.replace(/"/g, '""')}",${page.statusCode || ''},"${(page.contentType || '').replace(/"/g, '""')}",${page.size || ''},${page.loadTime || ''},${page.depth},"${page.contentHash || ''}",${page.containsSearchText || false},${page.textMatches || 0},${page.containsSearchUrl || false},${page.urlMatches || 0}`
       ),
       "",
       "PDF LINKS DISCOVERED",
@@ -155,7 +157,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 const activeCrawls = new Map<number, { shouldStop: boolean; currentUrl: string }>();
 
 // Crawling logic
-async function startCrawling(sessionId: number, startUrl: string, maxPages: number, maxDepth: number, searchText?: string) {
+async function startCrawling(sessionId: number, startUrl: string, maxPages: number, maxDepth: number, searchText?: string, searchUrl?: string) {
   const session = await storage.updateCrawlSession(sessionId, { 
     status: 'running',
     startedAt: new Date()
@@ -173,6 +175,7 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
   let successfulPages = 0;
   let errorPages = 0;
   let matchingPages = 0;
+  let urlMatchingPages = 0;
 
   // Add initial URL
   queue.push({ url: startUrl, depth: 0 });
@@ -221,10 +224,12 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
       });
       const loadTime = Date.now() - startTime;
 
-      // Generate content hash for duplicate detection and search for text
+      // Generate content hash for duplicate detection and search for text/URLs
       let contentHash = null;
       let containsSearchText = false;
       let textMatches = 0;
+      let containsSearchUrl = false;
+      let urlMatches = 0;
       
       if (response.data && response.status >= 200 && response.status < 300) {
         try {
@@ -291,6 +296,8 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
         contentHash,
         containsSearchText,
         textMatches,
+        containsSearchUrl,
+        urlMatches,
       });
 
       totalPages++;
@@ -302,9 +309,25 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
           matchingPages++;
         }
         
+        // Track URL search matches
+        if (containsSearchUrl) {
+          urlMatchingPages++;
+        }
+        
         // Extract links if it's HTML and we haven't reached max depth
         if (current.depth < maxDepth && response.headers['content-type']?.includes('text/html')) {
           const { links, pdfLinks } = extractLinksAndPdfs(response.data, startUrl);
+          
+          // Search for URL pattern in extracted links if searchUrl provided
+          if (searchUrl && searchUrl.trim()) {
+            const searchPattern = searchUrl.trim().toLowerCase();
+            const allUrls = [...links, ...pdfLinks];
+            const matchingUrls = allUrls.filter(url => url.toLowerCase().includes(searchPattern));
+            if (matchingUrls.length > 0) {
+              containsSearchUrl = true;
+              urlMatches = matchingUrls.length;
+            }
+          }
           
           // Track PDF links
           for (const pdfLink of pdfLinks) {
@@ -329,6 +352,7 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
         successfulPages,
         errorPages,
         matchingPages,
+        urlMatchingPages,
       });
 
       // Broadcast progress via WebSocket
@@ -352,6 +376,8 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
         contentHash: null,
         containsSearchText: false,
         textMatches: 0,
+        containsSearchUrl: false,
+        urlMatches: 0,
       });
 
       await storage.updateCrawlSession(sessionId, {
@@ -359,6 +385,7 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
         successfulPages,
         errorPages,
         matchingPages,
+        urlMatchingPages,
       });
     }
   }
@@ -374,6 +401,7 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
       successfulPages,
       errorPages,
       matchingPages,
+      urlMatchingPages,
     });
   } catch (error) {
     console.error(`Failed to update session ${sessionId}:`, error);
