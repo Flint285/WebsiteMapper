@@ -27,10 +27,18 @@ export function ResultsTabs({ sessionId }: ResultsTabsProps) {
   const { data: linksResponse } = useQuery({
     queryKey: [`/api/crawl/${sessionId}/links`],
     enabled: !!sessionId,
+    refetchInterval: (query) => {
+      // Only refetch if there are no links yet, or during active crawls  
+      const hasData = query.state.data && Array.isArray(query.state.data) && query.state.data.length > 0;
+      const sessionData = session as any;
+      return hasData && sessionData?.session?.status !== 'running' ? false : 5000;
+    },
   });
 
   const links = Array.isArray(linksResponse) ? linksResponse : [];
   const pages = (session as any)?.session?.totalPages || 0;
+
+
 
   return (
     <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">

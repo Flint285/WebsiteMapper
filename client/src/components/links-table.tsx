@@ -22,6 +22,11 @@ export function LinksTable({ sessionId }: LinksTableProps) {
   const { data: response, isLoading, error } = useQuery({
     queryKey: [`/api/crawl/${sessionId}/links`],
     enabled: !!sessionId,
+    refetchInterval: (query) => {
+      // Only refetch if there are no links yet, or every 5 seconds during active crawls
+      const hasData = query.state.data && Array.isArray(query.state.data) && query.state.data.length > 0;
+      return hasData ? false : 5000;
+    },
     retry: (failureCount, error: any) => {
       // Don't retry if session is not found
       if (error?.message?.includes('404') || error?.status === 404) {
