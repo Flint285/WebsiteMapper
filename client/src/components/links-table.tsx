@@ -34,7 +34,7 @@ export function LinksTable({ sessionId }: LinksTableProps) {
   // Extract links from response - API returns array directly
   const links = Array.isArray(response) ? response : [];
 
-  console.log('LinksTable Debug:', { sessionId, response, linksLength: links.length });
+
 
 
 
@@ -77,7 +77,7 @@ export function LinksTable({ sessionId }: LinksTableProps) {
     );
   }
 
-  if (links.length === 0) {
+  if (!Array.isArray(response) || links.length === 0) {
     return (
       <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
         <CardContent className="p-8 text-center">
