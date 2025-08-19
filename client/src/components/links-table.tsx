@@ -141,8 +141,8 @@ export function LinksTable({ sessionId }: LinksTableProps) {
   const externalCount = links.filter(l => !l.isInternal).length;
 
   return (
-    <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
-      <CardHeader className="pb-4">
+    <div>
+      <div className="pb-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <CardTitle className="text-2xl font-bold text-gray-900">
@@ -193,9 +193,9 @@ export function LinksTable({ sessionId }: LinksTableProps) {
             </SelectContent>
           </Select>
         </div>
-      </CardHeader>
+      </div>
 
-      <CardContent className="p-0">
+      <div className="p-0">
         <div className="rounded-xl border border-gray-200 overflow-hidden">
           <Table>
             <TableHeader className="bg-gray-50">
@@ -273,7 +273,7 @@ export function LinksTable({ sessionId }: LinksTableProps) {
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

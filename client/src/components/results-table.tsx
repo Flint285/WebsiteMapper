@@ -214,8 +214,8 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
   }
 
   return (
-    <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
-      <CardHeader className="pb-4">
+    <div>
+      <div className="pb-4">
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <CardTitle className="mb-2 sm:mb-0 text-2xl font-bold text-gray-900">
@@ -296,8 +296,8 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
             </Select>
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div>
         {filteredPages.length === 0 ? (
           <div className="py-12 text-center">
             <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
@@ -450,7 +450,7 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -4,8 +4,7 @@ import { Bug, Search } from "lucide-react";
 import CrawlerForm from "@/components/crawler-form";
 import CrawlStatus from "@/components/crawl-status";
 import ResultsSummary from "@/components/results-summary";
-import ResultsTable from "@/components/results-table";
-import { LinksTable } from "@/components/links-table";
+import { ResultsTabs } from "@/components/results-tabs";
 
 export default function CrawlerPage() {
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
@@ -86,8 +85,7 @@ export default function CrawlerPage() {
           <>
             <CrawlStatus sessionId={currentSessionId} />
             <ResultsSummary sessionId={currentSessionId} />
-            <ResultsTable sessionId={currentSessionId} />
-            <LinksTable sessionId={currentSessionId} />
+            <ResultsTabs sessionId={currentSessionId} />
           </>
         ) : (
           <div className="text-center py-12">
