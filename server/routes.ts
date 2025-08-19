@@ -129,6 +129,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       const links = await storage.getDiscoveredLinks(sessionId);
+      
+      // Add response size limit for very large datasets
+      const responseSize = JSON.stringify(links).length;
+      if (responseSize > 50 * 1024 * 1024) { // 50MB limit
+        res.status(413).json({ 
+          error: "Response too large",
+          linkCount: links.length,
+          message: "Too many links to return in single response. Use pagination or filtering."
+        });
+        return;
+      }
+      
       res.json(links);
     } catch (error) {
       console.error("Error fetching links:", error);
@@ -310,15 +322,20 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
         links = extracted.links;
         pdfLinks = extracted.pdfLinks;
         
-        // Store all discovered links in the database
-        for (const link of extracted.allLinks) {
-          await storage.addDiscoveredLink({
-            sessionId,
-            sourceUrl: current.url,
-            targetUrl: link.url,
-            linkText: link.text,
-            isInternal: link.isInternal,
-          });
+        // Store all discovered links in the database with error handling
+        try {
+          for (const link of extracted.allLinks) {
+            await storage.addDiscoveredLink({
+              sessionId,
+              sourceUrl: current.url,
+              targetUrl: link.url,
+              linkText: link.text || null,
+              isInternal: link.isInternal,
+            });
+          }
+        } catch (linkError) {
+          console.warn(`Failed to store links for ${current.url}:`, linkError);
+          // Continue crawling even if link storage fails
         }
         
         // Search for URL pattern in extracted links if searchUrl provided
@@ -485,12 +502,14 @@ function extractLinksAndPdfs(html: string, baseUrl: string): {
   const $ = cheerio.load(html);
   const linkSet = new Set<string>();
   const pdfLinkSet = new Set<string>();
-  const allLinks: Array<{ url: string, text: string, isInternal: boolean }> = [];
+  const allLinksMap = new Map<string, { url: string, text: string, isInternal: boolean }>();
   const base = new URL(baseUrl);
   
   $('a[href]').each((_, element) => {
     const href = $(element).attr('href');
-    const linkText = $(element).text().trim() || href || '';
+    // Clean link text: normalize whitespace and limit length
+    const rawText = $(element).text().replace(/\s+/g, ' ').trim();
+    const linkText = rawText.length > 200 ? rawText.substring(0, 200) + '...' : rawText;
     
     if (href && href.trim()) {
       try {
@@ -506,12 +525,16 @@ function extractLinksAndPdfs(html: string, baseUrl: string): {
         const urlHost = url.hostname.replace(/^www\./, '');
         const isInternal = urlHost === baseHost;
         
-        // Add to all links (both internal and external)
-        allLinks.push({
-          url: url.toString(),
-          text: linkText,
-          isInternal
-        });
+        const urlString = url.toString();
+        
+        // Deduplicate: only keep the first occurrence of each URL, or prefer non-empty link text
+        if (!allLinksMap.has(urlString) || (linkText && !allLinksMap.get(urlString)?.text)) {
+          allLinksMap.set(urlString, {
+            url: urlString,
+            text: linkText || href || '',
+            isInternal
+          });
+        }
         
         // Only process internal links for crawling
         if (!isInternal) {
@@ -559,7 +582,7 @@ function extractLinksAndPdfs(html: string, baseUrl: string): {
   return {
     links: Array.from(linkSet),
     pdfLinks: Array.from(pdfLinkSet),
-    allLinks
+    allLinks: Array.from(allLinksMap.values())
   };
 }
 

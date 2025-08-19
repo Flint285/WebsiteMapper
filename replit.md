@@ -112,6 +112,15 @@ WebsiteMapper is a professional SEO analysis tool that provides web crawling cap
 - Maintains SEO-relevant URL variations for analysis
 
 ## Changelog
+- August 19, 2025: Critical bug fixes and system hardening implemented:
+  - Fixed duplicate link storage issue by implementing Map-based deduplication in extractLinksAndPdfs()
+  - Enhanced link text processing: normalized whitespace, limited length to 200 chars, preserved meaningful text
+  - Added response size limits (50MB) for large link datasets to prevent memory issues
+  - Implemented error handling for link storage operations to prevent crawl failures
+  - Fixed frontend display bug showing filtered count instead of total count in component title
+  - Added better error messaging for session expiration and server restart scenarios
+  - Improved React Query error handling with detailed error information
+  - Enhanced system resilience against edge cases in link extraction and storage
 - August 19, 2025: Comprehensive link discovery and scanning feature implemented:
   - Added DiscoveredLink schema and database storage for all links found during crawling
   - Created LinksTable component with advanced filtering, search, and pagination capabilities

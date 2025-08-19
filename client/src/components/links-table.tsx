@@ -52,7 +52,12 @@ export function LinksTable({ sessionId }: LinksTableProps) {
     return (
       <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
         <CardContent className="p-8 text-center">
-          <p className="text-gray-500">Error loading links. Please try again.</p>
+          <p className="text-gray-500">
+            Error loading links: {error?.toString() || 'Unknown error'}
+          </p>
+          <p className="text-sm text-gray-400 mt-2">
+            This may happen if the crawl session expired or the server restarted.
+          </p>
         </CardContent>
       </Card>
     );
@@ -127,10 +132,13 @@ export function LinksTable({ sessionId }: LinksTableProps) {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <CardTitle className="text-2xl font-bold text-gray-900">
-              Discovered Links ({filteredLinks.length})
+              Discovered Links ({links.length})
             </CardTitle>
             <p className="text-gray-600 mt-1">
               {internalCount} internal • {externalCount} external
+              {filteredLinks.length !== links.length && (
+                <span className="text-blue-600"> • {filteredLinks.length} filtered</span>
+              )}
             </p>
           </div>
           <Button onClick={exportLinks} className="flex items-center gap-2">
