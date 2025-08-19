@@ -19,7 +19,7 @@ export function LinksTable({ sessionId }: LinksTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(50);
 
-  const { data: links, isLoading, error } = useQuery<DiscoveredLink[]>({
+  const { data: response, isLoading, error } = useQuery({
     queryKey: [`/api/crawl/${sessionId}/links`],
     enabled: !!sessionId,
     retry: (failureCount, error: any) => {
@@ -30,6 +30,11 @@ export function LinksTable({ sessionId }: LinksTableProps) {
       return failureCount < 3;
     },
   });
+
+  // Extract links from response - API returns array directly
+  const links = Array.isArray(response) ? response : [];
+
+  console.log('LinksTable Debug:', { sessionId, response, linksLength: links.length });
 
 
 
