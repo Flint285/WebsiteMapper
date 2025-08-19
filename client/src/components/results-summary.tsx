@@ -135,11 +135,11 @@ export default function ResultsSummary({ sessionId }: ResultsSummaryProps) {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <CardTitle className="text-2xl font-bold text-gray-900">Crawl Results Summary</CardTitle>
           <div className="flex space-x-3">
-            <Button onClick={handleExport} className="bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 shadow-md">
+            <Button onClick={handleExport} className="bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 shadow-md transition-all duration-200">
               <Download className="mr-2 h-4 w-4" />
               Export CSV
             </Button>
-            <Button variant="outline" onClick={handleShare} className="border-2 border-gray-300 hover:border-gray-400 shadow-md">
+            <Button variant="outline" onClick={handleShare} className="border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 shadow-md transition-all duration-200">
               <Copy className="mr-2 h-4 w-4" />
               Copy URL
             </Button>

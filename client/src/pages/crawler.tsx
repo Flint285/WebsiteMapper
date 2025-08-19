@@ -65,20 +65,22 @@ export default function CrawlerPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <CrawlerForm onSessionStart={handleSessionStart} />
         
-        {/* Temporary session switcher for debugging */}
-        <div className="mb-4 text-center">
-          <button 
-            onClick={handleSwitchToSession2}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            View Session 2 Results (72K+ Links)
-          </button>
-          {currentSessionId && (
-            <span className="ml-3 text-sm text-gray-600">
-              Current session: {currentSessionId}
-            </span>
-          )}
-        </div>
+        {/* Hidden debug panel - only show in development */}
+        {import.meta.env.DEV && (
+          <div className="mb-4 text-center">
+            <button 
+              onClick={handleSwitchToSession2}
+              className="px-3 py-1 bg-gray-200 text-gray-600 text-xs rounded hover:bg-gray-300"
+            >
+              Dev: View Session 2
+            </button>
+            {currentSessionId && (
+              <span className="ml-3 text-xs text-gray-500">
+                Session: {currentSessionId}
+              </span>
+            )}
+          </div>
+        )}
         
         {currentSessionId ? (
           <>

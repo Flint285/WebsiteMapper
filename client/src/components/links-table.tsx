@@ -150,7 +150,7 @@ export function LinksTable({ sessionId }: LinksTableProps) {
               )}
             </p>
           </div>
-          <Button onClick={exportLinks} className="flex items-center gap-2">
+          <Button onClick={exportLinks} className="bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 shadow-md transition-all duration-200 flex items-center gap-2">
             <Download className="h-4 w-4" />
             Export CSV
           </Button>

@@ -227,8 +227,9 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
                   id="unique-only"
                   checked={showUniqueOnly}
                   onCheckedChange={handleUniqueToggle}
+                  aria-label="Filter to show unique content only"
                 />
-                <Label htmlFor="unique-only" className="text-sm font-semibold text-gray-700 whitespace-nowrap">
+                <Label htmlFor="unique-only" className="text-sm font-semibold text-gray-700 whitespace-nowrap cursor-pointer">
                   Unique content only
                 </Label>
               </div>

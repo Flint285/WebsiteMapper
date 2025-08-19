@@ -166,7 +166,7 @@ export default function CrawlStatus({ sessionId }: CrawlStatusProps) {
               {session.totalPages}{session.maxPages ? ` / ${session.maxPages.toLocaleString()}` : ""} pages
             </span>
           </div>
-          <Progress value={progress} className="h-3 bg-gray-200" />
+          <Progress value={progress} className="h-3 bg-gray-200 transition-all duration-500 ease-out" />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
