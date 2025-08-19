@@ -38,6 +38,9 @@ export interface IStorage {
   getLinkCount(sessionId: number): Promise<number>;
   getInternalLinkCount(sessionId: number): Promise<number>;
   getExternalLinkCount(sessionId: number): Promise<number>;
+  
+  // Session management
+  getLatestSession(): Promise<CrawlSession | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -237,6 +240,16 @@ export class MemStorage implements IStorage {
       link.sessionId === sessionId && link.isInternal === false
     );
     return links.length;
+  }
+
+  async getLatestSession(): Promise<CrawlSession | undefined> {
+    const sessions = Array.from(this.crawlSessions.values());
+    if (sessions.length === 0) return undefined;
+    
+    // Return the session with the highest ID (most recent)
+    return sessions.reduce((latest, current) => 
+      current.id > latest.id ? current : latest
+    );
   }
 }
 

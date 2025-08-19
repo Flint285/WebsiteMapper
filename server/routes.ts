@@ -30,6 +30,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get latest session
+  app.get("/api/crawl/latest", async (req, res) => {
+    try {
+      const sessions = await storage.getLatestSession();
+      if (!sessions) {
+        return res.status(404).json({ error: "No sessions found" });
+      }
+      res.json({ sessionId: sessions.id });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get latest session" });
+    }
+  });
+
   // Get crawl session progress
   app.get("/api/crawl/:sessionId", async (req, res) => {
     const sessionId = parseInt(req.params.sessionId);

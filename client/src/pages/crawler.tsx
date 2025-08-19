@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Bug, Search } from "lucide-react";
 import CrawlerForm from "@/components/crawler-form";
 import CrawlStatus from "@/components/crawl-status";
@@ -9,12 +10,30 @@ import { LinksTable } from "@/components/links-table";
 export default function CrawlerPage() {
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
   
+  // Auto-detect the most recent session
+  const { data: latestSession } = useQuery({
+    queryKey: ['/api/crawl/latest'],
+    retry: false,
+  });
+  
+  useEffect(() => {
+    if (latestSession && (latestSession as any)?.sessionId && !currentSessionId) {
+      const sessionId = (latestSession as any).sessionId;
+      console.log(`Auto-detecting latest session: ${sessionId}`);
+      setCurrentSessionId(sessionId);
+    }
+  }, [latestSession, currentSessionId]);
+
+  // Add manual session switcher button for session 2
+  const handleSwitchToSession2 = () => {
+    console.log('Manually switching to session 2');
+    setCurrentSessionId(2);
+  };
+  
   const handleSessionStart = (sessionId: number) => {
     console.log(`Setting current session to: ${sessionId}`);
     setCurrentSessionId(sessionId);
   };
-
-  // Remove automatic session setting - let user start new crawl instead
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -45,6 +64,21 @@ export default function CrawlerPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <CrawlerForm onSessionStart={handleSessionStart} />
+        
+        {/* Temporary session switcher for debugging */}
+        <div className="mb-4 text-center">
+          <button 
+            onClick={handleSwitchToSession2}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            View Session 2 Results (72K+ Links)
+          </button>
+          {currentSessionId && (
+            <span className="ml-3 text-sm text-gray-600">
+              Current session: {currentSessionId}
+            </span>
+          )}
+        </div>
         
         {currentSessionId ? (
           <>
