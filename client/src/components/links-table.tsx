@@ -20,7 +20,7 @@ export function LinksTable({ sessionId }: LinksTableProps) {
   const [itemsPerPage, setItemsPerPage] = useState(50);
 
   const { data: links, isLoading, error } = useQuery<DiscoveredLink[]>({
-    queryKey: ['/api/crawl', sessionId, 'links'],
+    queryKey: [`/api/crawl/${sessionId}/links`],
     enabled: !!sessionId,
   });
 
