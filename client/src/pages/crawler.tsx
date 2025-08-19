@@ -4,6 +4,7 @@ import CrawlerForm from "@/components/crawler-form";
 import CrawlStatus from "@/components/crawl-status";
 import ResultsSummary from "@/components/results-summary";
 import ResultsTable from "@/components/results-table";
+import { LinksTable } from "@/components/links-table";
 
 export default function CrawlerPage() {
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
@@ -48,6 +49,7 @@ export default function CrawlerPage() {
             <CrawlStatus sessionId={currentSessionId} />
             <ResultsSummary sessionId={currentSessionId} />
             <ResultsTable sessionId={currentSessionId} />
+            <LinksTable sessionId={currentSessionId} />
           </>
         )}
       </main>

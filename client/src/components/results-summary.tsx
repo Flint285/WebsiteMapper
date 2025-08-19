@@ -145,6 +145,10 @@ export default function ResultsSummary({ sessionId }: ResultsSummaryProps) {
             <div className="text-3xl font-bold text-purple-700 mb-2">{stats.pdfLinks?.toLocaleString() || 0}</div>
             <div className="text-sm font-medium text-purple-600">PDF Links Found</div>
           </div>
+          <div className="text-center p-6 bg-gradient-to-br from-cyan-50 to-blue-100 rounded-xl border border-cyan-200 shadow-sm">
+            <div className="text-3xl font-bold text-cyan-700 mb-2">{stats.totalLinks?.toLocaleString() || 0}</div>
+            <div className="text-sm font-medium text-cyan-600">Total Links</div>
+          </div>
           {session.searchText && (
             <div className="text-center p-6 bg-gradient-to-br from-yellow-50 to-amber-100 rounded-xl border border-yellow-200 shadow-sm">
               <div className="text-3xl font-bold text-amber-700 mb-2">{stats.matchingPages?.toLocaleString() || 0}</div>

@@ -38,6 +38,16 @@ export const crawledPages = pgTable("crawled_pages", {
   discoveredAt: timestamp("discovered_at").defaultNow(),
 });
 
+export const discoveredLinks = pgTable("discovered_links", {
+  id: serial("id").primaryKey(),
+  sessionId: integer("session_id").notNull(),
+  sourceUrl: text("source_url").notNull(), // The page where this link was found
+  targetUrl: text("target_url").notNull(), // The URL this link points to
+  linkText: text("link_text"), // The anchor text of the link
+  isInternal: boolean("is_internal").notNull(), // Whether the link is internal to the domain
+  discoveredAt: timestamp("discovered_at").defaultNow(),
+});
+
 export const insertCrawlSessionSchema = createInsertSchema(crawlSessions).pick({
   url: true,
   maxPages: true,
@@ -61,10 +71,20 @@ export const insertCrawledPageSchema = createInsertSchema(crawledPages).pick({
   urlMatches: true,
 });
 
+export const insertDiscoveredLinkSchema = createInsertSchema(discoveredLinks).pick({
+  sessionId: true,
+  sourceUrl: true,
+  targetUrl: true,
+  linkText: true,
+  isInternal: true,
+});
+
 export type InsertCrawlSession = z.infer<typeof insertCrawlSessionSchema>;
 export type CrawlSession = typeof crawlSessions.$inferSelect;
 export type InsertCrawledPage = z.infer<typeof insertCrawledPageSchema>;
 export type CrawledPage = typeof crawledPages.$inferSelect;
+export type InsertDiscoveredLink = z.infer<typeof insertDiscoveredLinkSchema>;
+export type DiscoveredLink = typeof discoveredLinks.$inferSelect;
 
 // API request/response types
 export const startCrawlSchema = z.object({
@@ -89,6 +109,9 @@ export type CrawlProgressResponse = {
     pdfLinks: number;
     matchingPages: number; // Pages containing search text
     urlMatchingPages: number; // Pages containing search URL
+    totalLinks: number; // Total links discovered
+    internalLinks: number; // Internal links
+    externalLinks: number; // External links
     statusCodes: Record<string, number>;
     pageTypes: Record<string, number>;
   };

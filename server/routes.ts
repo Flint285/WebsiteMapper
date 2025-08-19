@@ -90,6 +90,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         pdfLinks,
         matchingPages,
         urlMatchingPages: session.urlMatchingPages || 0,
+        totalLinks: await storage.getLinkCount(sessionId),
+        internalLinks: await storage.getInternalLinkCount(sessionId),
+        externalLinks: await storage.getExternalLinkCount(sessionId),
         statusCodes,
         pageTypes,
       },
@@ -118,6 +121,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     res.json({ success: true });
+  });
+
+  // Get discovered links for a session
+  app.get("/api/crawl/:sessionId/links", async (req, res) => {
+    const sessionId = parseInt(req.params.sessionId);
+    
+    try {
+      const links = await storage.getDiscoveredLinks(sessionId);
+      res.json(links);
+    } catch (error) {
+      console.error("Error fetching links:", error);
+      res.status(500).json({ error: "Failed to fetch links" });
+    }
   });
 
   // Export crawl results as CSV
@@ -290,9 +306,20 @@ async function startCrawling(sessionId: number, startUrl: string, maxPages: numb
       let pdfLinks: string[] = [];
       
       if (response.status >= 200 && response.status < 300 && current.depth < maxDepth && response.headers['content-type']?.includes('text/html')) {
-        const extracted = extractLinksAndPdfs(response.data, startUrl);
+        const extracted = extractLinksAndPdfs(response.data, current.url);
         links = extracted.links;
         pdfLinks = extracted.pdfLinks;
+        
+        // Store all discovered links in the database
+        for (const link of extracted.allLinks) {
+          await storage.addDiscoveredLink({
+            sessionId,
+            sourceUrl: current.url,
+            targetUrl: link.url,
+            linkText: link.text,
+            isInternal: link.isInternal,
+          });
+        }
         
         // Search for URL pattern in extracted links if searchUrl provided
         if (searchUrl && searchUrl.trim()) {
@@ -450,14 +477,21 @@ async function getSitemapUrls(baseUrl: string): Promise<string[]> {
   return urls;
 }
 
-function extractLinksAndPdfs(html: string, baseUrl: string): { links: string[], pdfLinks: string[] } {
+function extractLinksAndPdfs(html: string, baseUrl: string): { 
+  links: string[], 
+  pdfLinks: string[], 
+  allLinks: Array<{ url: string, text: string, isInternal: boolean }> 
+} {
   const $ = cheerio.load(html);
   const linkSet = new Set<string>();
   const pdfLinkSet = new Set<string>();
+  const allLinks: Array<{ url: string, text: string, isInternal: boolean }> = [];
   const base = new URL(baseUrl);
   
   $('a[href]').each((_, element) => {
     const href = $(element).attr('href');
+    const linkText = $(element).text().trim() || href || '';
+    
     if (href && href.trim()) {
       try {
         // Skip javascript:, mailto:, tel:, and other non-http protocols
@@ -467,10 +501,20 @@ function extractLinksAndPdfs(html: string, baseUrl: string): { links: string[], 
         
         const url = new URL(href.trim(), baseUrl);
         
-        // Only include links from the exact same hostname (with www normalization)
+        // Determine if link is internal or external
         const baseHost = base.hostname.replace(/^www\./, '');
         const urlHost = url.hostname.replace(/^www\./, '');
-        if (urlHost !== baseHost) {
+        const isInternal = urlHost === baseHost;
+        
+        // Add to all links (both internal and external)
+        allLinks.push({
+          url: url.toString(),
+          text: linkText,
+          isInternal
+        });
+        
+        // Only process internal links for crawling
+        if (!isInternal) {
           return;
         }
         
@@ -514,7 +558,8 @@ function extractLinksAndPdfs(html: string, baseUrl: string): { links: string[], 
   
   return {
     links: Array.from(linkSet),
-    pdfLinks: Array.from(pdfLinkSet)
+    pdfLinks: Array.from(pdfLinkSet),
+    allLinks
   };
 }
 

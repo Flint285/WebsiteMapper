@@ -1,4 +1,4 @@
-import { crawlSessions, crawledPages, type CrawlSession, type InsertCrawlSession, type CrawledPage, type InsertCrawledPage } from "@shared/schema";
+import { crawlSessions, crawledPages, discoveredLinks, type CrawlSession, type InsertCrawlSession, type CrawledPage, type InsertCrawledPage, type DiscoveredLink, type InsertDiscoveredLink } from "@shared/schema";
 
 export interface IStorage {
   // Crawl sessions
@@ -31,21 +31,32 @@ export interface IStorage {
   // URL search functionality
   getPagesByUrlMatch(sessionId: number, hasSearchUrl?: boolean): Promise<CrawledPage[]>;
   getUrlMatchCount(sessionId: number): Promise<number>;
+  
+  // Link discovery functionality
+  addDiscoveredLink(link: InsertDiscoveredLink): Promise<DiscoveredLink>;
+  getDiscoveredLinks(sessionId: number): Promise<DiscoveredLink[]>;
+  getLinkCount(sessionId: number): Promise<number>;
+  getInternalLinkCount(sessionId: number): Promise<number>;
+  getExternalLinkCount(sessionId: number): Promise<number>;
 }
 
 export class MemStorage implements IStorage {
   private crawlSessions: Map<number, CrawlSession>;
   private crawledPages: Map<number, CrawledPage>;
+  private discoveredLinks: Map<number, DiscoveredLink>;
   private pdfLinks: Map<number, Set<string>>; // sessionId -> set of PDF URLs
   private currentSessionId: number;
   private currentPageId: number;
+  private currentLinkId: number;
 
   constructor() {
     this.crawlSessions = new Map();
     this.crawledPages = new Map();
+    this.discoveredLinks = new Map();
     this.pdfLinks = new Map();
     this.currentSessionId = 1;
     this.currentPageId = 1;
+    this.currentLinkId = 1;
   }
 
   async createCrawlSession(insertSession: InsertCrawlSession): Promise<CrawlSession> {
@@ -187,6 +198,45 @@ export class MemStorage implements IStorage {
     return Array.from(this.crawledPages.values()).filter(
       (page) => page.sessionId === sessionId && page.containsSearchUrl
     ).length;
+  }
+
+  async addDiscoveredLink(insertLink: InsertDiscoveredLink): Promise<DiscoveredLink> {
+    const id = this.currentLinkId++;
+    const link: DiscoveredLink = {
+      ...insertLink,
+      id,
+      linkText: insertLink.linkText || null,
+      discoveredAt: new Date(),
+    };
+    this.discoveredLinks.set(id, link);
+    return link;
+  }
+
+  async getDiscoveredLinks(sessionId: number): Promise<DiscoveredLink[]> {
+    return Array.from(this.discoveredLinks.values()).filter(link => 
+      link.sessionId === sessionId
+    );
+  }
+
+  async getLinkCount(sessionId: number): Promise<number> {
+    const links = Array.from(this.discoveredLinks.values()).filter(link => 
+      link.sessionId === sessionId
+    );
+    return links.length;
+  }
+
+  async getInternalLinkCount(sessionId: number): Promise<number> {
+    const links = Array.from(this.discoveredLinks.values()).filter(link => 
+      link.sessionId === sessionId && link.isInternal === true
+    );
+    return links.length;
+  }
+
+  async getExternalLinkCount(sessionId: number): Promise<number> {
+    const links = Array.from(this.discoveredLinks.values()).filter(link => 
+      link.sessionId === sessionId && link.isInternal === false
+    );
+    return links.length;
   }
 }
 
