@@ -14,10 +14,7 @@ export default function CrawlerPage() {
     setCurrentSessionId(sessionId);
   };
 
-  // Set current session to 2 for testing (since that's where the link data is)
-  if (currentSessionId === null) {
-    setCurrentSessionId(2);
-  }
+  // Remove automatic session setting - let user start new crawl instead
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">

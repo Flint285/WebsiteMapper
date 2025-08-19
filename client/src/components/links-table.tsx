@@ -22,6 +22,13 @@ export function LinksTable({ sessionId }: LinksTableProps) {
   const { data: links, isLoading, error } = useQuery<DiscoveredLink[]>({
     queryKey: ['/api/crawl', sessionId, 'links'],
     enabled: !!sessionId,
+    retry: (failureCount, error: any) => {
+      // Don't retry if session is not found
+      if (error?.message?.includes('404') || error?.status === 404) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 
 

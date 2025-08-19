@@ -25,11 +25,18 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const { toast } = useToast();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["/api/crawl", sessionId],
     refetchInterval: (query) => {
       const session = (query?.state?.data as any)?.session;
       return session?.status === "running" ? 2000 : false;
+    },
+    retry: (failureCount, error: any) => {
+      // Don't retry if session is not found
+      if (error?.message?.includes('404') || error?.status === 404) {
+        return false;
+      }
+      return failureCount < 3;
     },
   });
 
@@ -167,6 +174,23 @@ export default function ResultsTable({ sessionId }: ResultsTableProps) {
               <div key={i} className="h-12 bg-gray-100 rounded animate-pulse"></div>
             ))}
           </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Handle error cases 
+  if (error && !isLoading) {
+    return (
+      <Card>
+        <CardContent className="py-12 text-center">
+          <div className="mx-auto w-24 h-24 bg-amber-100 rounded-full flex items-center justify-center mb-4">
+            <FileText className="h-8 w-8 text-amber-600" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Session Not Found</h3>
+          <p className="text-gray-500 text-sm max-w-sm mx-auto">
+            The crawl session may have expired or the server was restarted. Please start a new crawl.
+          </p>
         </CardContent>
       </Card>
     );

@@ -11,16 +11,44 @@ interface ResultsSummaryProps {
 export default function ResultsSummary({ sessionId }: ResultsSummaryProps) {
   const { toast } = useToast();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["/api/crawl", sessionId],
     refetchInterval: (query) => {
       const session = (query?.state?.data as any)?.session;
       return session?.status === "running" ? 2000 : false;
     },
+    retry: (failureCount, error: any) => {
+      // Don't retry if session is not found
+      if (error?.message?.includes('404') || error?.status === 404) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 
   const session = (data as any)?.session;
   const stats = (data as any)?.stats;
+
+  // Handle error state
+  if (error && !isLoading) {
+    return (
+      <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm mb-8">
+        <CardContent className="p-8 text-center">
+          <div className="text-amber-600 mb-4">
+            <div className="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center">
+              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Session Expired</h3>
+          <p className="text-gray-500">
+            The crawl session is no longer available. Please start a new crawl to see results.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
   
 
 
