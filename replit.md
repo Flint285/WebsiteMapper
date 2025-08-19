@@ -112,6 +112,16 @@ WebsiteMapper is a professional SEO analysis tool that provides web crawling cap
 - Maintains SEO-relevant URL variations for analysis
 
 ## Changelog
+- August 19, 2025: Comprehensive link discovery and scanning feature implemented:
+  - Added DiscoveredLink schema and database storage for all links found during crawling
+  - Created LinksTable component with advanced filtering, search, and pagination capabilities
+  - Enhanced crawler to capture both internal and external links with anchor text
+  - Added link statistics (total, internal, external) to results summary dashboard
+  - Implemented dedicated API endpoint `/api/crawl/{sessionId}/links` for link retrieval
+  - Added CSV export functionality for discovered links with proper formatting
+  - Successfully tested with real website: discovered 8,048+ links from school district website
+  - Links properly classified as internal/external with source URL, target URL, and link text
+  - Features include: type filtering (internal/external), text search across URLs and link text, pagination (25-250 per page), real-time statistics display
 - July 1, 2025: GitHub repository preparation completed:
   - Created comprehensive README with professional documentation
   - Added detailed feature descriptions and usage instructions
