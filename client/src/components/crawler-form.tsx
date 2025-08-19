@@ -211,7 +211,7 @@ export default function CrawlerForm({ onSessionStart }: CrawlerFormProps) {
             
             <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200/60">
               <div className="flex items-start space-x-3">
-                <div className="bg-blue-100 p-1 rounded-lg">
+                <div className="bg-blue-100 p-1 rounded-lg flex-shrink-0">
                   <Info className="h-4 w-4 text-blue-600" />
                 </div>
                 <div className="text-sm text-blue-800">

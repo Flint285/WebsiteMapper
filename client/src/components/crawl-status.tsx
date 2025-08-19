@@ -65,10 +65,12 @@ export default function CrawlStatus({ sessionId }: CrawlStatusProps) {
 
   if (isLoading) {
     return (
-      <Card className="mb-8">
+      <Card className="mb-8 border-0 shadow-lg bg-white/70 backdrop-blur-sm">
         <CardContent className="p-6">
-          <div className="flex items-center justify-center">
-            <div className="text-muted-foreground">Loading crawl status...</div>
+          <div className="animate-pulse space-y-3">
+            <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+            <div className="h-8 bg-gray-200 rounded w-full"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
           </div>
         </CardContent>
       </Card>

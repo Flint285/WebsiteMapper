@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Bug } from "lucide-react";
+import { Bug, Search } from "lucide-react";
 import CrawlerForm from "@/components/crawler-form";
 import CrawlStatus from "@/components/crawl-status";
 import ResultsSummary from "@/components/results-summary";
@@ -46,13 +46,41 @@ export default function CrawlerPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <CrawlerForm onSessionStart={handleSessionStart} />
         
-        {currentSessionId && (
+        {currentSessionId ? (
           <>
             <CrawlStatus sessionId={currentSessionId} />
             <ResultsSummary sessionId={currentSessionId} />
             <ResultsTable sessionId={currentSessionId} />
             <LinksTable sessionId={currentSessionId} />
           </>
+        ) : (
+          <div className="text-center py-12">
+            <div className="mx-auto w-24 h-24 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mb-6">
+              <Search className="h-12 w-12 text-blue-600" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Ready to Start Crawling</h3>
+            <p className="text-gray-600 max-w-md mx-auto">
+              Enter a website URL above to begin discovering pages, analyzing content, and generating comprehensive SEO insights.
+            </p>
+            <div className="mt-6 flex flex-wrap justify-center gap-4 text-sm text-gray-500">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                Duplicate Detection
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                Link Discovery
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                SEO Analysis
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                Real-time Progress
+              </div>
+            </div>
+          </div>
         )}
       </main>
 

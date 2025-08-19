@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Download, Share } from "lucide-react";
+import { Download, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -140,8 +140,8 @@ export default function ResultsSummary({ sessionId }: ResultsSummaryProps) {
               Export CSV
             </Button>
             <Button variant="outline" onClick={handleShare} className="border-2 border-gray-300 hover:border-gray-400 shadow-md">
-              <Share className="mr-2 h-4 w-4" />
-              Share Report
+              <Copy className="mr-2 h-4 w-4" />
+              Copy URL
             </Button>
           </div>
         </div>
